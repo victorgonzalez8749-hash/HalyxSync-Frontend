@@ -28,8 +28,22 @@ import com.halyxsynck.theme.Background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import com.halyxsynck.viewmodel.LoginViewModel
+
+import com.halyxsynck.navigation.Navigator
+import com.halyxsynck.navigation.Screen
+
+import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
+
 @Composable
 fun LoginScreen() {
+
+    val viewModel = LoginViewModel()
+    val scope = rememberCoroutineScope()
+
 
     var correo by remember {
         mutableStateOf("")
@@ -59,14 +73,14 @@ fun LoginScreen() {
 
         LoginCard {
 
-            RoleSelector()
-
-            Spacer(modifier = Modifier.height(24.dp))
-
             PrimaryTextField(
                 value = correo,
                 onValueChange = {
+
                     correo = it
+
+                    viewModel.actualizarCorreo(it)
+
                 },
                 label = "Correo electrónico",
                 placeholder = "nombre@ejemplo.com"
@@ -77,10 +91,24 @@ fun LoginScreen() {
             PasswordField(
                 value = contrasena,
                 onValueChange = {
+
                     contrasena = it
+
+                    viewModel.actualizarContrasena(it)
+
                 }
             )
 
+            if (viewModel.mensaje.isNotBlank()) {
+
+                Text(
+                    text = viewModel.mensaje,
+                    color = Color.Red
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+            }
             Spacer(modifier = Modifier.height(12.dp))
 
             ForgotPassword(
@@ -92,12 +120,28 @@ fun LoginScreen() {
             Spacer(modifier = Modifier.height(24.dp))
 
             PrimaryButton(
+
                 text = "Iniciar Sesión",
+
                 onClick = {
 
-                }
-            )
+                    scope.launch {
 
+                        val correcto = viewModel.login()
+
+                        if (correcto) {
+
+                            Navigator.navigate(
+                                Screen.DashboardPaciente
+                            )
+
+                        }
+
+                    }
+
+                }
+
+            )
             Spacer(modifier = Modifier.height(18.dp))
 
             RegisterLink()
@@ -105,5 +149,7 @@ fun LoginScreen() {
         }
 
     }
+
+
 
 }

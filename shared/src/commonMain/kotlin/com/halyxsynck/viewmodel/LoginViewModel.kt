@@ -1,11 +1,14 @@
 package com.halyxsynck.viewmodel
 
-
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.halyxsynck.repository.AuthRepository
+import com.halyxsynck.session.UserSession
 
 class LoginViewModel {
+
+    private val repository = AuthRepository()
 
     var correo by mutableStateOf("")
         private set
@@ -13,10 +16,7 @@ class LoginViewModel {
     var contrasena by mutableStateOf("")
         private set
 
-    var cargando by mutableStateOf(false)
-        private set
-
-    var mensajeError by mutableStateOf("")
+    var mensaje by mutableStateOf("")
         private set
 
     fun actualizarCorreo(valor: String) {
@@ -27,4 +27,24 @@ class LoginViewModel {
         contrasena = valor
     }
 
+    suspend fun login(): Boolean {
+
+        val respuesta = repository.login(
+            correo,
+            contrasena
+        )
+
+        mensaje = respuesta.mensaje
+
+        if (respuesta.success) {
+
+            UserSession.nombre = respuesta.nombre ?: ""
+
+            UserSession.rol = respuesta.rol ?: ""
+
+        }
+
+        return respuesta.success
+
+    }
 }

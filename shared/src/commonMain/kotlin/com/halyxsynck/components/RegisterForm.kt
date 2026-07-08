@@ -25,7 +25,11 @@ fun RegisterForm(
 
     onPasswordChange: (String) -> Unit,
 
-    onConfirmPasswordChange: (String) -> Unit
+    onConfirmPasswordChange: (String) -> Unit,
+
+    onCedulaChange: (String) -> Unit,
+
+    onEspecialidadChange: (String) -> Unit
 
 ) {
 
@@ -73,6 +77,28 @@ fun RegisterForm(
             label = "Teléfono",
             placeholder = "9991234567"
         )
+
+        if (data.rol == "DOCTOR") {
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PrimaryTextField(
+                value = data.cedulaProfesional,
+                onValueChange = onCedulaChange,
+                label = "Cédula profesional",
+                placeholder = "Ingrese su cédula"
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PrimaryTextField(
+                value = data.especialidad,
+                onValueChange = onEspecialidadChange,
+                label = "Especialidad",
+                placeholder = "Ej. Cardiología"
+            )
+
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 

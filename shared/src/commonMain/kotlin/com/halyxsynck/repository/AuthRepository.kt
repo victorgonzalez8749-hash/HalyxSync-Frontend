@@ -1,21 +1,35 @@
 package com.halyxsynck.repository
 
+import com.halyxsynck.api.AuthApi
+import com.halyxsynck.model.LoginRequest
+import com.halyxsynck.model.LoginResponse
+
+import com.halyxsynck.model.RegisterRequest
+import com.halyxsynck.model.RegisterResponse
 
 class AuthRepository {
+
+    private val api = AuthApi()
 
     suspend fun login(
         correo: String,
         contrasena: String
-    ): Boolean {
+    ): LoginResponse {
 
-        // Aquí llamaremos a AuthApi más adelante
-        return false
+        return api.login(
+            LoginRequest(
+                correo = correo,
+                contrasena = contrasena
+            )
+        )
 
     }
 
-    suspend fun registrar() {
+    suspend fun registrar(
+        request: RegisterRequest
+    ): RegisterResponse {
 
-        // Aquí enviaremos RegisterData al servidor
+        return api.registrar(request)
 
     }
 

@@ -26,7 +26,7 @@ fun RegisterLink() {
             modifier = Modifier.clickable {
 
                 Navigator.navigate(
-                    Screen.RegistroPaciente
+                    Screen.SeleccionRol
                 )
 
             }

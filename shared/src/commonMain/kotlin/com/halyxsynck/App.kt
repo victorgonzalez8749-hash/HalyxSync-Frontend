@@ -8,7 +8,9 @@ import com.halyxsynck.theme.HalyxTheme
 import com.halyxsynck.ui.LoginScreen
 import com.halyxsynck.ui.SplashScreen
 import com.halyxsynck.ui.RegisterScreen
-
+import androidx.compose.material3.Text
+import com.halyxsynck.ui.DashboardPaciente
+import com.halyxsynck.ui.RoleSelectionScreen
 
 @Composable
 @Preview
@@ -22,6 +24,8 @@ fun App() {
 
             Screen.Login -> LoginScreen()
 
+            Screen.SeleccionRol -> RoleSelectionScreen()
+
             Screen.RegistroPaciente ->
                 RegisterScreen()
 
@@ -29,9 +33,7 @@ fun App() {
                 // La crearemos después
             }
 
-            Screen.DashboardPaciente -> {
-                // La crearemos después
-            }
+            Screen.DashboardPaciente -> DashboardPaciente()
 
             Screen.DashboardDoctor -> {
                 // La crearemos después

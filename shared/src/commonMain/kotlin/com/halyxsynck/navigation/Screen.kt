@@ -7,6 +7,8 @@ sealed class Screen {
 
     object Login : Screen()
 
+    object SeleccionRol : Screen()
+
     object RegistroPaciente : Screen()
 
     object RegistroDoctor : Screen()

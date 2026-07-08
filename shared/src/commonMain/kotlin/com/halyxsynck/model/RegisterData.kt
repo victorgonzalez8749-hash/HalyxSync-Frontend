@@ -1,6 +1,8 @@
 package com.halyxsynck.model
+import kotlinx.serialization.Serializable
 
 
+@Serializable
 data class RegisterData(
 
     val nombre: String = "",
