@@ -6,4 +6,6 @@ object UserSession {
 
     var rol: String = ""
 
+    var correo: String = ""
+
 }

@@ -34,6 +34,7 @@ import com.halyxsynck.viewmodel.LoginViewModel
 
 import com.halyxsynck.navigation.Navigator
 import com.halyxsynck.navigation.Screen
+import com.halyxsynck.session.UserSession
 
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
@@ -131,9 +132,12 @@ fun LoginScreen() {
 
                         if (correcto) {
 
-                            Navigator.navigate(
-                                Screen.DashboardPaciente
-                            )
+                            // NUEVO: según el rol, mandamos al dashboard correspondiente
+                            if (UserSession.rol == "DOCTOR") {
+                                Navigator.navigate(Screen.DashboardDoctor)
+                            } else {
+                                Navigator.navigate(Screen.DashboardPaciente)
+                            }
 
                         }
 

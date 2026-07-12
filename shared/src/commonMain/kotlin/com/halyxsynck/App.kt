@@ -10,6 +10,7 @@ import com.halyxsynck.ui.SplashScreen
 import com.halyxsynck.ui.RegisterScreen
 import androidx.compose.material3.Text
 import com.halyxsynck.ui.DashboardPaciente
+import com.halyxsynck.ui.DashboardDoctor
 import com.halyxsynck.ui.RoleSelectionScreen
 
 @Composable
@@ -35,9 +36,7 @@ fun App() {
 
             Screen.DashboardPaciente -> DashboardPaciente()
 
-            Screen.DashboardDoctor -> {
-                // La crearemos después
-            }
+            Screen.DashboardDoctor -> DashboardDoctor()
 
             Screen.DashboardAdmin -> {
                 // La crearemos después

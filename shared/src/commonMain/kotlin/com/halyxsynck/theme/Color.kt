@@ -24,3 +24,8 @@ val Error = Color(0xFFD32F2F)
 // Extras
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
+
+// Acentos para el dashboard del paciente (mezcla azul-morado)
+val PurpleAccent = Color(0xFF6C4FD6)
+val GradientStart = Color(0xFF0D3B80)
+val GradientEnd = Color(0xFF6C4FD6)

@@ -42,6 +42,8 @@ class LoginViewModel {
 
             UserSession.rol = respuesta.rol ?: ""
 
+            UserSession.correo = correo // NUEVO: guardamos el correo para pedir su info médica después
+
         }
 
         return respuesta.success
