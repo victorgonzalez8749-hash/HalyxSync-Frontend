@@ -3,7 +3,6 @@ package com.halyxsynck.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -14,12 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.halyxsynck.components.PatientAvatar
 import com.halyxsynck.components.PrimaryButton
 import com.halyxsynck.model.PacienteInfo
 import com.halyxsynck.navigation.Navigator
@@ -57,26 +56,8 @@ fun DashboardPaciente() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            val iniciales = UserSession.nombre
-                .split(" ")
-                .filter { it.isNotBlank() }
-                .take(2)
-                .joinToString("") { it.first().uppercase() }
-
-            Box(
-                modifier = Modifier
-                    .size(90.dp)
-                    .clip(CircleShape)
-                    .background(White),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = iniciales.ifBlank { "?" },
-                    color = PrimaryBlue,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            // Avatar dibujado con formas (sin descargar nada)
+            PatientAvatar()
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -116,20 +97,20 @@ fun DashboardPaciente() {
 
             } else {
 
-                InfoCard(titulo = "Médico asignado") {
+                InfoCard(titulo = "🩺 Médico asignado") {
                     Text(info!!.medicoAsignado, fontWeight = FontWeight.SemiBold, color = TextPrimary)
                     Text(info!!.especialidadMedico, color = TextSecondary, fontSize = 13.sp)
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                InfoCard(titulo = "Edad") {
+                InfoCard(titulo = "🎂 Edad") {
                     Text("${info!!.edad} años", color = TextPrimary)
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                InfoCard(titulo = "Padecimientos") {
+                InfoCard(titulo = "📋 Padecimientos") {
                     info!!.padecimientos.forEach { p ->
                         Text("• $p", color = TextPrimary, modifier = Modifier.padding(vertical = 2.dp))
                     }
@@ -137,11 +118,12 @@ fun DashboardPaciente() {
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                InfoCard(titulo = "Medicamentos recetados") {
+                InfoCard(titulo = "💊 Medicamentos recetados") {
                     info!!.medicamentos.forEach { med ->
-                        Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                            Text(med.nombre, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                        Column(modifier = Modifier.padding(vertical = 6.dp)) {
+                            Text("💊 ${med.nombre}", fontWeight = FontWeight.SemiBold, color = TextPrimary)
                             Text(med.dosis, color = TextSecondary, fontSize = 13.sp)
+                            Text("⏰ ${med.horario}", color = PurpleAccent, fontSize = 13.sp)
                         }
                     }
                 }
