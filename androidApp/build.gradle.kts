@@ -18,6 +18,9 @@ dependencies {
 
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
+
+    // NUEVO: para reconocimiento de huella digital
+    implementation("androidx.biometric:biometric:1.1.0")
 }
 
 android {

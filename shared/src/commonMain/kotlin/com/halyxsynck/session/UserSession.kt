@@ -8,4 +8,6 @@ object UserSession {
 
     var correo: String = ""
 
+    var contrasenaGuardada: String = "" // NUEVO: para permitir login con huella
+
 }
