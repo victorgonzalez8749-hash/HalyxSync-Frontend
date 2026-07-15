@@ -35,6 +35,7 @@ import com.halyxsynck.viewmodel.LoginViewModel
 import com.halyxsynck.navigation.Navigator
 import com.halyxsynck.navigation.Screen
 import com.halyxsynck.session.UserSession
+import com.halyxsynck.Biometria
 
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
@@ -51,6 +52,10 @@ fun LoginScreen() {
     }
 
     var contrasena by remember {
+        mutableStateOf("")
+    }
+
+    var mensajeHuella by remember {
         mutableStateOf("")
     }
 
@@ -132,7 +137,6 @@ fun LoginScreen() {
 
                         if (correcto) {
 
-                            // NUEVO: según el rol, mandamos al dashboard correspondiente
                             if (UserSession.rol == "DOCTOR") {
                                 Navigator.navigate(Screen.DashboardDoctor)
                             } else {
@@ -146,6 +150,69 @@ fun LoginScreen() {
                 }
 
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // NUEVO: botón para iniciar sesión con huella
+            PrimaryButton(
+
+                text = "🔒 Iniciar sesión con huella",
+
+                onClick = {
+
+                    if (UserSession.correo.isBlank() || UserSession.contrasenaGuardada.isBlank()) {
+
+                        mensajeHuella = "Primero inicia sesión una vez con tu correo y contraseña"
+
+                    } else {
+
+                        Biometria.autenticar(
+                            onExito = {
+
+                                correo = UserSession.correo
+                                viewModel.actualizarCorreo(UserSession.correo)
+                                contrasena = UserSession.contrasenaGuardada
+                                viewModel.actualizarContrasena(UserSession.contrasenaGuardada)
+
+                                scope.launch {
+
+                                    val correcto = viewModel.login()
+
+                                    if (correcto) {
+
+                                        if (UserSession.rol == "DOCTOR") {
+                                            Navigator.navigate(Screen.DashboardDoctor)
+                                        } else {
+                                            Navigator.navigate(Screen.DashboardPaciente)
+                                        }
+
+                                    }
+
+                                }
+
+                            },
+                            onError = { error ->
+                                mensajeHuella = error
+                            }
+                        )
+
+                    }
+
+                }
+
+            )
+
+            if (mensajeHuella.isNotBlank()) {
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = mensajeHuella,
+                    color = Color.Red
+                )
+
+            }
+
             Spacer(modifier = Modifier.height(18.dp))
 
             RegisterLink()

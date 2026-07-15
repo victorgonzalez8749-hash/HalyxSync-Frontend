@@ -42,7 +42,9 @@ class LoginViewModel {
 
             UserSession.rol = respuesta.rol ?: ""
 
-            UserSession.correo = correo // NUEVO: guardamos el correo para pedir su info médica después
+            UserSession.correo = correo
+
+            UserSession.contrasenaGuardada = contrasena // NUEVO: para permitir login con huella
 
         }
 
