@@ -8,6 +8,10 @@ object UserSession {
 
     var correo: String = ""
 
-    var contrasenaGuardada: String = "" // NUEVO: para permitir login con huella
+    var contrasenaGuardada: String = ""
+
+    // NUEVO: guarda el correo específicamente para el login con huella,
+    // y NO se borra al cerrar sesión
+    var correoParaHuella: String = ""
 
 }

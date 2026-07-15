@@ -153,14 +153,14 @@ fun LoginScreen() {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // NUEVO: botón para iniciar sesión con huella
+            // Botón para iniciar sesión con huella
             PrimaryButton(
 
                 text = "🔒 Iniciar sesión con huella",
 
                 onClick = {
 
-                    if (UserSession.correo.isBlank() || UserSession.contrasenaGuardada.isBlank()) {
+                    if (UserSession.correoParaHuella.isBlank() || UserSession.contrasenaGuardada.isBlank()) {
 
                         mensajeHuella = "Primero inicia sesión una vez con tu correo y contraseña"
 
@@ -169,8 +169,8 @@ fun LoginScreen() {
                         Biometria.autenticar(
                             onExito = {
 
-                                correo = UserSession.correo
-                                viewModel.actualizarCorreo(UserSession.correo)
+                                correo = UserSession.correoParaHuella
+                                viewModel.actualizarCorreo(UserSession.correoParaHuella)
                                 contrasena = UserSession.contrasenaGuardada
                                 viewModel.actualizarContrasena(UserSession.contrasenaGuardada)
 

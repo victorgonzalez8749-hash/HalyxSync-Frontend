@@ -44,7 +44,9 @@ class LoginViewModel {
 
             UserSession.correo = correo
 
-            UserSession.contrasenaGuardada = contrasena // NUEVO: para permitir login con huella
+            UserSession.contrasenaGuardada = contrasena
+
+            UserSession.correoParaHuella = correo // NUEVO: no se borra al cerrar sesión
 
         }
 
