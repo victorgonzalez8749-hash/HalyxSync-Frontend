@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.halyxsynck.components.DoctorAvatar
 import com.halyxsynck.components.PrimaryButton
 import com.halyxsynck.components.PrimaryTextField
 import com.halyxsynck.model.MedicamentoRequest
@@ -57,8 +58,14 @@ fun DashboardDoctor() {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Brush.horizontalGradient(listOf(GradientStart, GradientEnd)))
-                .padding(24.dp)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            // Avatar dibujado del doctor (con "bata")
+            DoctorAvatar()
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = "Dr. ${UserSession.nombre}",
@@ -68,7 +75,7 @@ fun DashboardDoctor() {
             )
 
             Text(
-                text = "Registrar historial médico",
+                text = "📋 Registrar historial médico",
                 color = White.copy(alpha = 0.85f),
                 fontSize = 14.sp
             )
@@ -87,7 +94,7 @@ fun DashboardDoctor() {
 
                 Column(modifier = Modifier.padding(18.dp)) {
 
-                    Text("Datos del paciente", color = PurpleAccent, fontWeight = FontWeight.Bold)
+                    Text("🧑 Datos del paciente", color = PurpleAccent, fontWeight = FontWeight.Bold)
 
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -139,7 +146,7 @@ fun DashboardDoctor() {
 
                 Column(modifier = Modifier.padding(18.dp)) {
 
-                    Text("Receta (medicamento)", color = PurpleAccent, fontWeight = FontWeight.Bold)
+                    Text("💊 Receta (medicamento)", color = PurpleAccent, fontWeight = FontWeight.Bold)
 
                     Spacer(modifier = Modifier.height(10.dp))
 
