@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 
 object Navigator {
 
-    private val backStack = mutableStateListOf<Screen>(Screen.Splash)
+    private val backStack = mutableStateListOf<Screen>(Screen.Login)
 
     var version by mutableStateOf(0)
         private set
