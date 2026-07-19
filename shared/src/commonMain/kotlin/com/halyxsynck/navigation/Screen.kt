@@ -19,4 +19,9 @@ sealed class Screen {
 
     object DashboardAdmin : Screen()
 
+    // NUEVO: pantallas del menú lateral del doctor
+    object MisPacientes : Screen()
+
+    data class DetallePaciente(val correo: String) : Screen()
+
 }

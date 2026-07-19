@@ -138,9 +138,9 @@ fun LoginScreen() {
                         if (correcto) {
 
                             if (UserSession.rol == "DOCTOR") {
-                                Navigator.navigate(Screen.DashboardDoctor)
+                                Navigator.navigateAndClear(Screen.DashboardDoctor)
                             } else {
-                                Navigator.navigate(Screen.DashboardPaciente)
+                                Navigator.navigateAndClear(Screen.DashboardPaciente)
                             }
 
                         }
@@ -181,9 +181,9 @@ fun LoginScreen() {
                                     if (correcto) {
 
                                         if (UserSession.rol == "DOCTOR") {
-                                            Navigator.navigate(Screen.DashboardDoctor)
+                                            Navigator.navigateAndClear(Screen.DashboardDoctor)
                                         } else {
-                                            Navigator.navigate(Screen.DashboardPaciente)
+                                            Navigator.navigateAndClear(Screen.DashboardPaciente)
                                         }
 
                                     }

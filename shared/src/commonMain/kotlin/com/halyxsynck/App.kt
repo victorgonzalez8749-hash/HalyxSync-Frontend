@@ -12,6 +12,8 @@ import androidx.compose.material3.Text
 import com.halyxsynck.ui.DashboardPaciente
 import com.halyxsynck.ui.DashboardDoctor
 import com.halyxsynck.ui.RoleSelectionScreen
+import com.halyxsynck.ui.PantallaMisPacientes
+import com.halyxsynck.ui.PantallaDetallePaciente
 
 @Composable
 @Preview
@@ -19,7 +21,7 @@ fun App() {
 
     HalyxTheme {
 
-        when (Navigator.currentScreen) {
+        when (val pantalla = Navigator.currentScreen) {
 
             Screen.Splash -> SplashScreen()
 
@@ -41,6 +43,12 @@ fun App() {
             Screen.DashboardAdmin -> {
                 // La crearemos después
             }
+
+            // NUEVO
+            Screen.MisPacientes -> PantallaMisPacientes()
+
+            // NUEVO — aquí usamos "pantalla" para sacar el correo que trae adentro
+            is Screen.DetallePaciente -> PantallaDetallePaciente(correo = pantalla.correo)
 
         }
 

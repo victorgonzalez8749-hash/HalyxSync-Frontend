@@ -70,6 +70,9 @@ kotlin {
             implementation("io.ktor:ktor-client-core:3.2.3")
             implementation("io.ktor:ktor-client-content-negotiation:3.2.3")
             implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
+
+            // NUEVO: para íconos de Material (Home, People, Menu, etc.)
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

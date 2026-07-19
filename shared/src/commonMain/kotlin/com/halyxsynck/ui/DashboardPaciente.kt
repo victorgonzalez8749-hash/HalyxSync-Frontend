@@ -138,7 +138,7 @@ fun DashboardPaciente() {
                     UserSession.nombre = ""
                     UserSession.rol = ""
                     UserSession.correo = ""
-                    Navigator.navigate(Screen.Login)
+                    Navigator.navigateAndClear(Screen.Login)
                 }
             )
 
