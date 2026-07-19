@@ -12,6 +12,7 @@ data class MedicamentoRequest(
 @Serializable
 data class RegistrarHistorialRequest(
     val correoPaciente: String,
+    val correoDoctor: String,
     val edad: Int,
     val padecimientos: List<String>,
     val medicoAsignado: String,
