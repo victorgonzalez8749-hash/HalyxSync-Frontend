@@ -14,6 +14,7 @@ data class RegistrarHistorialRequest(
     val correoPaciente: String,
     val correoDoctor: String,
     val edad: Int,
+    val sexo: String,
     val padecimientos: List<String>,
     val medicoAsignado: String,
     val especialidadMedico: String,
