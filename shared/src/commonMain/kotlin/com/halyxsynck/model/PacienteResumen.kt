@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class PacienteResumen(
     val correo: String,
     val nombreCompleto: String,
-    val edad: Int
+    val edad: Int,
+    val sexo: String
 )
