@@ -14,6 +14,7 @@ import com.halyxsynck.ui.DashboardDoctor
 import com.halyxsynck.ui.RoleSelectionScreen
 import com.halyxsynck.ui.PantallaMisPacientes
 import com.halyxsynck.ui.PantallaDetallePaciente
+import com.halyxsynck.ui.PantallaPerfilDoctor
 
 @Composable
 @Preview
@@ -44,10 +45,11 @@ fun App() {
                 // La crearemos después
             }
 
-            // NUEVO
             Screen.MisPacientes -> PantallaMisPacientes()
 
-            // NUEVO — aquí usamos "pantalla" para sacar el correo que trae adentro
+            // NUEVO
+            Screen.PerfilDoctor -> PantallaPerfilDoctor()
+
             is Screen.DetallePaciente -> PantallaDetallePaciente(correo = pantalla.correo)
 
         }

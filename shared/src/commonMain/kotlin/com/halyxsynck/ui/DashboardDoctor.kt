@@ -193,7 +193,7 @@ fun DashboardDoctor() {
                         icono = Icons.Default.LocalHospital,
                         colorFondo = SecondaryCyan,
                         texto = "Especialidad",
-                        onClick = { }
+                        onClick = { Navigator.navigate(Screen.PerfilDoctor) }
                     )
                 }
 

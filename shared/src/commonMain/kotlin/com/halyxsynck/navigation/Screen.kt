@@ -22,6 +22,8 @@ sealed class Screen {
     // NUEVO: pantallas del menú lateral del doctor
     object MisPacientes : Screen()
 
+    object PerfilDoctor : Screen()
+
     data class DetallePaciente(val correo: String) : Screen()
 
 }
