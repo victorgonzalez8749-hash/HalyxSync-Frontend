@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.halyxsynck.components.DoctorAvatar
 import com.halyxsynck.navigation.Navigator
 import com.halyxsynck.navigation.Screen
+import com.halyxsynck.repository.DoctorRepository
 import com.halyxsynck.session.UserSession
 import com.halyxsynck.theme.*
 import kotlinx.coroutines.launch
@@ -33,6 +34,14 @@ fun DashboardDoctor() {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val repository = remember { DoctorRepository() }
+
+    var totalPacientes by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(Unit) {
+        val stats = repository.obtenerEstadisticas(UserSession.correo)
+        totalPacientes = stats.totalPacientes
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -144,7 +153,7 @@ fun DashboardDoctor() {
                         icono = Icons.Default.People,
                         colorIcono = PurpleAccent,
                         titulo = "Pacientes",
-                        valor = "—"
+                        valor = totalPacientes?.toString() ?: "—"
                     )
                     TarjetaStat(
                         modifier = Modifier.weight(1f),
