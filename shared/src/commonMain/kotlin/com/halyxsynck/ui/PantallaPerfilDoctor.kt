@@ -40,7 +40,6 @@ fun PantallaPerfilDoctor() {
                 .padding(padding)
         ) {
 
-            // Cabecera con avatar grande e insignia de "Doctor verificado"
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -83,7 +82,12 @@ fun PantallaPerfilDoctor() {
 
                 FilaPerfil(icono = Icons.Default.Email, color = SecondaryCyan, titulo = "Correo", valor = UserSession.correo)
                 Spacer(modifier = Modifier.height(12.dp))
-                FilaPerfil(icono = Icons.Default.LocalHospital, color = PurpleAccent, titulo = "Especialidad", valor = "Consulta tu perfil en cada historial registrado")
+                FilaPerfil(
+                    icono = Icons.Default.LocalHospital,
+                    color = PurpleAccent,
+                    titulo = "Especialidad",
+                    valor = if (UserSession.especialidad.isNotBlank()) UserSession.especialidad else "No especificada"
+                )
                 Spacer(modifier = Modifier.height(12.dp))
                 FilaPerfil(icono = Icons.Default.Badge, color = PrimaryBlue, titulo = "Rol", valor = UserSession.rol)
 

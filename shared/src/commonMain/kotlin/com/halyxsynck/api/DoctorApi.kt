@@ -8,6 +8,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.serialization.Serializable
 
 class DoctorApi {
 
@@ -34,7 +35,6 @@ class DoctorApi {
 
     }
 
-    // NUEVO: obtener la lista de pacientes asignados a este doctor
     suspend fun obtenerPacientes(correoDoctor: String): List<PacienteResumen> {
 
         return try {
@@ -51,4 +51,26 @@ class DoctorApi {
 
     }
 
+    // NUEVO: obtener estadísticas rápidas (total de pacientes)
+    suspend fun obtenerEstadisticas(correoDoctor: String): EstadisticasDoctor {
+
+        return try {
+
+            client.get("$baseUrl/doctor/estadisticas?correo=$correoDoctor").body()
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            EstadisticasDoctor(totalPacientes = 0)
+
+        }
+
+    }
+
 }
+
+@Serializable
+data class EstadisticasDoctor(
+    val totalPacientes: Int
+)
