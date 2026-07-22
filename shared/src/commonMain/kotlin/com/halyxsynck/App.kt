@@ -15,6 +15,7 @@ import com.halyxsynck.ui.RoleSelectionScreen
 import com.halyxsynck.ui.PantallaMisPacientes
 import com.halyxsynck.ui.PantallaDetallePaciente
 import com.halyxsynck.ui.PantallaPerfilDoctor
+import com.halyxsynck.ui.PantallaConsultas
 
 @Composable
 @Preview
@@ -47,8 +48,10 @@ fun App() {
 
             Screen.MisPacientes -> PantallaMisPacientes()
 
-            // NUEVO
             Screen.PerfilDoctor -> PantallaPerfilDoctor()
+
+            // NUEVO
+            Screen.Consultas -> PantallaConsultas()
 
             is Screen.DetallePaciente -> PantallaDetallePaciente(correo = pantalla.correo)
 

@@ -183,7 +183,7 @@ fun DashboardDoctor() {
                         icono = Icons.Default.MedicalServices,
                         colorFondo = PrimaryBlue,
                         texto = "Consultas",
-                        onClick = { }
+                        onClick = { Navigator.navigate(Screen.Consultas) }
                     )
                 }
 
