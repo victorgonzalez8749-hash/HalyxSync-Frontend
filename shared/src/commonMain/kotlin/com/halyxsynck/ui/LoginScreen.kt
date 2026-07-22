@@ -54,7 +54,6 @@ fun LoginScreen() {
     var mensajeHuella by remember { mutableStateOf("") }
     var mostrarConsentimiento by remember { mutableStateOf(false) }
 
-    // Al abrir la pantalla, recuperamos la sesión guardada (si existe) desde el dispositivo
     LaunchedEffect(Unit) {
         val correoGuardado = SesionSegura.obtenerCorreo()
         val contrasenaGuardada = SesionSegura.obtenerContrasena()
@@ -146,7 +145,6 @@ fun LoginScreen() {
                         val correcto = viewModel.login()
                         if (correcto) {
 
-                            // Guardamos la sesión de forma persistente en el dispositivo
                             SesionSegura.guardar(correo, contrasena)
 
                             if (UserSession.rol == "DOCTOR") {
@@ -162,9 +160,9 @@ fun LoginScreen() {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Botón para iniciar sesión con huella
+            // Botón para iniciar sesión con huella o rostro
             PrimaryButton(
-                text = "🔒 Iniciar sesión con huella",
+                text = "🔒 Iniciar sesión con huella o rostro",
                 onClick = {
 
                     if (UserSession.correoParaHuella.isBlank() || UserSession.contrasenaGuardada.isBlank()) {
@@ -194,7 +192,6 @@ fun LoginScreen() {
 
     }
 
-    // Diálogo de consentimiento explícito, antes de usar huella/rostro por primera vez
     if (mostrarConsentimiento) {
 
         AlertDialog(
