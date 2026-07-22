@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,7 +14,7 @@ import androidx.compose.ui.unit.dp
 
 import com.halyxsynck.components.Logo
 import com.halyxsynck.components.WelcomeHeader
-import com.halyxsynck.components.RoleSelector
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +38,7 @@ import com.halyxsynck.navigation.Navigator
 import com.halyxsynck.navigation.Screen
 import com.halyxsynck.session.UserSession
 import com.halyxsynck.Biometria
+import com.halyxsynck.SesionSegura
 
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
@@ -46,17 +49,44 @@ fun LoginScreen() {
     val viewModel = LoginViewModel()
     val scope = rememberCoroutineScope()
 
+    var correo by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
+    var mensajeHuella by remember { mutableStateOf("") }
+    var mostrarConsentimiento by remember { mutableStateOf(false) }
 
-    var correo by remember {
-        mutableStateOf("")
+    // Al abrir la pantalla, recuperamos la sesión guardada (si existe) desde el dispositivo
+    LaunchedEffect(Unit) {
+        val correoGuardado = SesionSegura.obtenerCorreo()
+        val contrasenaGuardada = SesionSegura.obtenerContrasena()
+        if (correoGuardado.isNotBlank() && contrasenaGuardada.isNotBlank()) {
+            UserSession.correoParaHuella = correoGuardado
+            UserSession.contrasenaGuardada = contrasenaGuardada
+        }
     }
 
-    var contrasena by remember {
-        mutableStateOf("")
-    }
+    fun intentarLoginConHuella() {
+        Biometria.autenticar(
+            onExito = {
+                correo = UserSession.correoParaHuella
+                viewModel.actualizarCorreo(UserSession.correoParaHuella)
+                contrasena = UserSession.contrasenaGuardada
+                viewModel.actualizarContrasena(UserSession.contrasenaGuardada)
 
-    var mensajeHuella by remember {
-        mutableStateOf("")
+                scope.launch {
+                    val correcto = viewModel.login()
+                    if (correcto) {
+                        if (UserSession.rol == "DOCTOR") {
+                            Navigator.navigateAndClear(Screen.DashboardDoctor)
+                        } else {
+                            Navigator.navigateAndClear(Screen.DashboardPaciente)
+                        }
+                    }
+                }
+            },
+            onError = { error ->
+                mensajeHuella = error
+            }
+        )
     }
 
     Column(
@@ -82,11 +112,8 @@ fun LoginScreen() {
             PrimaryTextField(
                 value = correo,
                 onValueChange = {
-
                     correo = it
-
                     viewModel.actualizarCorreo(it)
-
                 },
                 label = "Correo electrónico",
                 placeholder = "nombre@ejemplo.com"
@@ -97,45 +124,30 @@ fun LoginScreen() {
             PasswordField(
                 value = contrasena,
                 onValueChange = {
-
                     contrasena = it
-
                     viewModel.actualizarContrasena(it)
-
                 }
             )
 
             if (viewModel.mensaje.isNotBlank()) {
-
-                Text(
-                    text = viewModel.mensaje,
-                    color = Color.Red
-                )
-
+                Text(text = viewModel.mensaje, color = Color.Red)
                 Spacer(modifier = Modifier.height(12.dp))
-
             }
             Spacer(modifier = Modifier.height(12.dp))
 
-            ForgotPassword(
-                onClick = {
-
-                }
-            )
+            ForgotPassword(onClick = {})
 
             Spacer(modifier = Modifier.height(24.dp))
 
             PrimaryButton(
-
                 text = "Iniciar Sesión",
-
                 onClick = {
-
                     scope.launch {
-
                         val correcto = viewModel.login()
-
                         if (correcto) {
+
+                            // Guardamos la sesión de forma persistente en el dispositivo
+                            SesionSegura.guardar(correo, contrasena)
 
                             if (UserSession.rol == "DOCTOR") {
                                 Navigator.navigateAndClear(Screen.DashboardDoctor)
@@ -144,73 +156,34 @@ fun LoginScreen() {
                             }
 
                         }
-
                     }
-
                 }
-
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             // Botón para iniciar sesión con huella
             PrimaryButton(
-
                 text = "🔒 Iniciar sesión con huella",
-
                 onClick = {
 
                     if (UserSession.correoParaHuella.isBlank() || UserSession.contrasenaGuardada.isBlank()) {
-
                         mensajeHuella = "Primero inicia sesión una vez con tu correo y contraseña"
+                        return@PrimaryButton
+                    }
 
+                    if (!SesionSegura.tienePermisoBiometrico()) {
+                        mostrarConsentimiento = true
                     } else {
-
-                        Biometria.autenticar(
-                            onExito = {
-
-                                correo = UserSession.correoParaHuella
-                                viewModel.actualizarCorreo(UserSession.correoParaHuella)
-                                contrasena = UserSession.contrasenaGuardada
-                                viewModel.actualizarContrasena(UserSession.contrasenaGuardada)
-
-                                scope.launch {
-
-                                    val correcto = viewModel.login()
-
-                                    if (correcto) {
-
-                                        if (UserSession.rol == "DOCTOR") {
-                                            Navigator.navigateAndClear(Screen.DashboardDoctor)
-                                        } else {
-                                            Navigator.navigateAndClear(Screen.DashboardPaciente)
-                                        }
-
-                                    }
-
-                                }
-
-                            },
-                            onError = { error ->
-                                mensajeHuella = error
-                            }
-                        )
-
+                        intentarLoginConHuella()
                     }
 
                 }
-
             )
 
             if (mensajeHuella.isNotBlank()) {
-
                 Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = mensajeHuella,
-                    color = Color.Red
-                )
-
+                Text(text = mensajeHuella, color = Color.Red)
             }
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -221,6 +194,33 @@ fun LoginScreen() {
 
     }
 
+    // Diálogo de consentimiento explícito, antes de usar huella/rostro por primera vez
+    if (mostrarConsentimiento) {
 
+        AlertDialog(
+            onDismissRequest = { mostrarConsentimiento = false },
+            title = { Text("Usar huella o reconocimiento facial") },
+            text = {
+                Text("Halyx Sync quiere usar el sensor de huella o reconocimiento facial de tu dispositivo para iniciar sesión de forma rápida y segura. ¿Autorizas su uso?")
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    SesionSegura.guardarPermisoBiometrico(true)
+                    mostrarConsentimiento = false
+                    intentarLoginConHuella()
+                }) {
+                    Text("Autorizar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    mostrarConsentimiento = false
+                }) {
+                    Text("No permitir")
+                }
+            }
+        )
+
+    }
 
 }
