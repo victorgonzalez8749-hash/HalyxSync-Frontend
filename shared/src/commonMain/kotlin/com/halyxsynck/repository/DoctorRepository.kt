@@ -1,5 +1,6 @@
 package com.halyxsynck.repository
 
+import com.halyxsynck.api.CitaAgendaInfo
 import com.halyxsynck.api.DoctorApi
 import com.halyxsynck.api.EstadisticasDoctor
 import com.halyxsynck.model.PacienteResumen
@@ -17,9 +18,13 @@ class DoctorRepository {
         return api.obtenerPacientes(correoDoctor)
     }
 
+    suspend fun obtenerEstadisticas(correoDoctor: String, fechaHoy: String): EstadisticasDoctor {
+        return api.obtenerEstadisticas(correoDoctor, fechaHoy)
+    }
+
     // NUEVO
-    suspend fun obtenerEstadisticas(correoDoctor: String): EstadisticasDoctor {
-        return api.obtenerEstadisticas(correoDoctor)
+    suspend fun obtenerCitasHoy(correoDoctor: String, fechaHoy: String): List<CitaAgendaInfo> {
+        return api.obtenerCitasHoy(correoDoctor, fechaHoy)
     }
 
 }

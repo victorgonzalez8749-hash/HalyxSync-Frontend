@@ -51,18 +51,34 @@ class DoctorApi {
 
     }
 
-    // NUEVO: obtener estadísticas rápidas (total de pacientes)
-    suspend fun obtenerEstadisticas(correoDoctor: String): EstadisticasDoctor {
+    suspend fun obtenerEstadisticas(correoDoctor: String, fechaHoy: String): EstadisticasDoctor {
 
         return try {
 
-            client.get("$baseUrl/doctor/estadisticas?correo=$correoDoctor").body()
+            client.get("$baseUrl/doctor/estadisticas?correo=$correoDoctor&fecha=$fechaHoy").body()
 
         } catch (e: Exception) {
 
             e.printStackTrace()
 
-            EstadisticasDoctor(totalPacientes = 0)
+            EstadisticasDoctor(totalPacientes = 0, citasHoy = 0)
+
+        }
+
+    }
+
+    // NUEVO: agenda de citas de hoy con detalle
+    suspend fun obtenerCitasHoy(correoDoctor: String, fechaHoy: String): List<CitaAgendaInfo> {
+
+        return try {
+
+            client.get("$baseUrl/doctor/citas-hoy?correo=$correoDoctor&fecha=$fechaHoy").body()
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            emptyList()
 
         }
 
@@ -72,5 +88,14 @@ class DoctorApi {
 
 @Serializable
 data class EstadisticasDoctor(
-    val totalPacientes: Int
+    val totalPacientes: Int,
+    val citasHoy: Int = 0
+)
+
+@Serializable
+data class CitaAgendaInfo(
+    val pacienteNombre: String,
+    val edad: Int,
+    val hora: String,
+    val motivo: String
 )
