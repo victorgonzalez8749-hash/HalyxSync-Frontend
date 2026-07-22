@@ -1,6 +1,7 @@
 package com.halyxsynck.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,9 @@ import com.halyxsynck.repository.DoctorRepository
 import com.halyxsynck.session.UserSession
 import com.halyxsynck.theme.*
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +46,12 @@ fun PantallaConsultas() {
     var fecha by remember { mutableStateOf("") }
     var hora by remember { mutableStateOf("") }
     var motivo by remember { mutableStateOf("") }
+
+    var mostrarDatePicker by remember { mutableStateOf(false) }
+    var mostrarTimePicker by remember { mutableStateOf(false) }
+
+    val datePickerState = rememberDatePickerState()
+    val timePickerState = rememberTimePickerState(is24Hour = true)
 
     var mensaje by remember { mutableStateOf("") }
 
@@ -157,20 +167,42 @@ fun PantallaConsultas() {
 
                         Spacer(modifier = Modifier.height(14.dp))
 
-                        PrimaryTextField(
+                        OutlinedTextField(
                             value = fecha,
-                            onValueChange = { fecha = it },
-                            label = "Fecha",
-                            placeholder = "Ej. 2026-07-25"
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Fecha") },
+                            placeholder = { Text("Selecciona una fecha") },
+                            trailingIcon = {
+                                IconButton(onClick = { mostrarDatePicker = true }) {
+                                    Icon(Icons.Default.CalendarToday, contentDescription = null, tint = PurpleAccent)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth().clickable { mostrarDatePicker = true },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = PrimaryBlue,
+                                unfocusedBorderColor = TextSecondary
+                            )
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        PrimaryTextField(
+                        OutlinedTextField(
                             value = hora,
-                            onValueChange = { hora = it },
-                            label = "Hora",
-                            placeholder = "Ej. 10:30 AM"
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Hora") },
+                            placeholder = { Text("Selecciona una hora") },
+                            trailingIcon = {
+                                IconButton(onClick = { mostrarTimePicker = true }) {
+                                    Icon(Icons.Default.Schedule, contentDescription = null, tint = PurpleAccent)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth().clickable { mostrarTimePicker = true },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = PrimaryBlue,
+                                unfocusedBorderColor = TextSecondary
+                            )
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -236,6 +268,56 @@ fun PantallaConsultas() {
 
         }
 
+    }
+
+    if (mostrarDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { mostrarDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val millis = datePickerState.selectedDateMillis
+                    if (millis != null) {
+                        val fechaSeleccionada = Instant.fromEpochMilliseconds(millis)
+                            .toLocalDateTime(TimeZone.UTC).date
+                        fecha = fechaSeleccionada.toString()
+                    }
+                    mostrarDatePicker = false
+                }) {
+                    Text("Aceptar", color = PurpleAccent)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarDatePicker = false }) {
+                    Text("Cancelar", color = TextSecondary)
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    if (mostrarTimePicker) {
+        AlertDialog(
+            onDismissRequest = { mostrarTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val h = timePickerState.hour.toString().padStart(2, '0')
+                    val m = timePickerState.minute.toString().padStart(2, '0')
+                    hora = "$h:$m"
+                    mostrarTimePicker = false
+                }) {
+                    Text("Aceptar", color = PurpleAccent)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarTimePicker = false }) {
+                    Text("Cancelar", color = TextSecondary)
+                }
+            },
+            text = {
+                TimePicker(state = timePickerState)
+            }
+        )
     }
 
 }

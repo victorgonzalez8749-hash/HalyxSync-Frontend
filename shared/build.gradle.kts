@@ -73,6 +73,9 @@ kotlin {
 
             // NUEVO: para íconos de Material (Home, People, Menu, etc.)
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
+
+            // NUEVO: para manejar fechas (DatePicker de las consultas)
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
