@@ -39,8 +39,7 @@ fun DashboardDoctor() {
     var totalPacientes by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(Unit) {
-        val stats = repository.obtenerEstadisticas(UserSession.correo)
-        totalPacientes = stats.totalPacientes
+        totalPacientes = repository.obtenerPacientes(UserSession.correo).size
     }
 
     ModalNavigationDrawer(
