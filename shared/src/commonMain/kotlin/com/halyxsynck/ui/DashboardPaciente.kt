@@ -19,9 +19,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.halyxsynck.components.PrimaryButton
+import com.halyxsynck.model.CitaInfo
 import com.halyxsynck.model.PacienteInfo
 import com.halyxsynck.navigation.Navigator
 import com.halyxsynck.navigation.Screen
+import com.halyxsynck.repository.CitaRepository
 import com.halyxsynck.repository.PacienteRepository
 import com.halyxsynck.session.UserSession
 import com.halyxsynck.theme.*
@@ -30,11 +32,15 @@ import com.halyxsynck.theme.*
 fun DashboardPaciente() {
 
     val repository = remember { PacienteRepository() }
+    val citaRepository = remember { CitaRepository() }
+
     var info by remember { mutableStateOf<PacienteInfo?>(null) }
+    var citas by remember { mutableStateOf<List<CitaInfo>>(emptyList()) }
     var cargando by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         info = repository.obtenerInfo(UserSession.correo)
+        citas = citaRepository.obtenerCitasPaciente(UserSession.correo)
         cargando = false
     }
 
@@ -45,7 +51,6 @@ fun DashboardPaciente() {
             .verticalScroll(rememberScrollState())
     ) {
 
-        // Cabecera con gradiente "neón" morado-azul
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -104,7 +109,6 @@ fun DashboardPaciente() {
 
             } else {
 
-                // Fila de datos rápidos: edad y sexo
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     MiniDato(
                         modifier = Modifier.weight(1f),
@@ -171,6 +175,30 @@ fun DashboardPaciente() {
                             }
                         }
                     }
+                }
+
+                if (citas.isNotEmpty()) {
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    TarjetaInfo(
+                        icono = Icons.Default.CalendarToday,
+                        colorIcono = PurpleAccent,
+                        titulo = "Próximas citas"
+                    ) {
+                        citas.forEach { cita ->
+                            Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Event, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("${cita.fecha} · ${cita.hora}", fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                                }
+                                Text("Con ${cita.medico} · ${cita.especialidad}", color = TextSecondary, fontSize = 13.sp, modifier = Modifier.padding(start = 22.dp))
+                                Text(cita.motivo, color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(start = 22.dp))
+                            }
+                        }
+                    }
+
                 }
 
             }
