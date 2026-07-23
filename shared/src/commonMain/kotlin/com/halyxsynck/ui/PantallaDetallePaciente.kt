@@ -13,9 +13,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.halyxsynck.components.PrimaryButton
 import com.halyxsynck.components.PrimaryTextField
 import com.halyxsynck.model.*
@@ -342,11 +344,29 @@ private fun TarjetaEstudiosPaciente(correo: String) {
                 Text("El paciente no ha subido ningún estudio todavía.", color = TextSecondary, fontSize = 13.sp)
             } else {
                 estudios.forEach { estudio ->
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
-                        Icon(Icons.Default.Description, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(estudio.descripcion.ifBlank { "Estudio" }, color = TextPrimary, fontSize = 13.sp, modifier = Modifier.weight(1f))
-                        Text(estudio.fecha, color = TextSecondary, fontSize = 12.sp)
+                    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Description, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(estudio.descripcion.ifBlank { "Estudio" }, color = TextPrimary, fontSize = 13.sp, modifier = Modifier.weight(1f))
+                            if (estudio.fecha.isNotBlank()) {
+                                Text(estudio.fecha, color = TextSecondary, fontSize = 12.sp)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        AsyncImage(
+                            model = estudio.url,
+                            contentDescription = "Estudio médico",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(220.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+
                     }
                 }
             }
