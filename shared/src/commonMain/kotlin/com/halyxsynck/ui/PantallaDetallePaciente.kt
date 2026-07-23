@@ -18,29 +18,46 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.halyxsynck.components.PrimaryButton
 import com.halyxsynck.components.PrimaryTextField
-import com.halyxsynck.model.MedicamentoRequest
-import com.halyxsynck.model.RegistrarHistorialRequest
+import com.halyxsynck.model.*
 import com.halyxsynck.repository.DoctorRepository
+import com.halyxsynck.repository.PacienteRepository
 import com.halyxsynck.session.UserSession
 import com.halyxsynck.theme.*
 import kotlinx.coroutines.launch
 
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaDetallePaciente(correo: String) {
 
-    val repository = remember { DoctorRepository() }
+    val doctorRepository = remember { DoctorRepository() }
+    val pacienteRepository = remember { PacienteRepository() }
     val scope = rememberCoroutineScope()
 
+    var cargando by remember { mutableStateOf(true) }
+    var infoExistente by remember { mutableStateOf<PacienteInfo?>(null) }
+
+    // Campos del formulario de registro inicial
     var edad by remember { mutableStateOf("") }
     var sexo by remember { mutableStateOf("Masculino") }
     var padecimientos by remember { mutableStateOf("") }
     var especialidad by remember { mutableStateOf("") }
+    var expandidoEspecialidad by remember { mutableStateOf(false) }
 
+    // Campos del medicamento (aplica en ambos casos: registro inicial o consulta nueva)
     var medNombre by remember { mutableStateOf("") }
+    var expandidoMed by remember { mutableStateOf(false) }
     var medDosis by remember { mutableStateOf("") }
+    var expandidoDosis by remember { mutableStateOf(false) }
     var medHorario by remember { mutableStateOf("") }
+    var medPadecimiento by remember { mutableStateOf("") }
+    var medObservaciones by remember { mutableStateOf("") }
 
     var mensaje by remember { mutableStateOf("") }
+
+    LaunchedEffect(correo) {
+        infoExistente = pacienteRepository.obtenerInfo(correo)
+        cargando = false
+    }
 
     Scaffold(
         topBar = {
@@ -63,7 +80,6 @@ fun PantallaDetallePaciente(correo: String) {
                 .padding(16.dp)
         ) {
 
-            // Cabecera con avatar tipo iniciales
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
@@ -76,147 +92,218 @@ fun PantallaDetallePaciente(correo: String) {
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
-                    Text("Paciente", fontSize = 12.sp, color = TextSecondary)
+                    Text(if (infoExistente != null) infoExistente!!.nombreCompleto else "Paciente nuevo", fontSize = 12.sp, color = TextSecondary)
                     Text(correo, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                colors = CardDefaults.cardColors(containerColor = White)
-            ) {
-                Column(modifier = Modifier.padding(18.dp)) {
+            if (cargando) {
 
-                    TituloConIcono(icono = Icons.Default.Person, texto = "Datos del paciente", color = PurpleAccent)
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    PrimaryTextField(
-                        value = edad,
-                        onValueChange = { edad = it },
-                        label = "Edad",
-                        placeholder = "Ej. 28"
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text("Sexo", fontSize = 13.sp, color = TextSecondary, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        listOf("Masculino", "Femenino", "Otro").forEach { opcion ->
-                            FilterChip(
-                                selected = sexo == opcion,
-                                onClick = { sexo = opcion },
-                                label = { Text(opcion, fontSize = 12.sp) },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = PurpleAccent,
-                                    selectedLabelColor = White
-                                )
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    PrimaryTextField(
-                        value = padecimientos,
-                        onValueChange = { padecimientos = it },
-                        label = "Padecimientos (separados por coma)",
-                        placeholder = "Diabetes, Hipertensión"
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    PrimaryTextField(
-                        value = especialidad,
-                        onValueChange = { especialidad = it },
-                        label = "Tu especialidad",
-                        placeholder = "Ej. Medicina Interna"
-                    )
-
+                Box(modifier = Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = PurpleAccent)
                 }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            } else if (infoExistente == null) {
 
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                colors = CardDefaults.cardColors(containerColor = White)
-            ) {
-                Column(modifier = Modifier.padding(18.dp)) {
+                // ---------- CASO 1: PACIENTE NUEVO — formulario completo ----------
 
-                    TituloConIcono(icono = Icons.Default.Medication, texto = "Receta médica", color = Success)
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    colors = CardDefaults.cardColors(containerColor = White)
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                        TituloConIcono(icono = Icons.Default.Person, texto = "Datos del paciente", color = PurpleAccent)
 
-                    PrimaryTextField(
-                        value = medNombre,
-                        onValueChange = { medNombre = it },
-                        label = "Nombre del medicamento",
-                        placeholder = "Ej. Metformina"
-                    )
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    PrimaryTextField(
-                        value = medDosis,
-                        onValueChange = { medDosis = it },
-                        label = "Dosis",
-                        placeholder = "Ej. 850mg"
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Schedule, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Horario de toma", fontSize = 12.sp, color = TextSecondary)
-                    }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    PrimaryTextField(
-                        value = medHorario,
-                        onValueChange = { medHorario = it },
-                        label = "Horario",
-                        placeholder = "Ej. 08:00,14:00,20:00"
-                    )
-
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            PrimaryButton(
-                text = "Guardar historial",
-                onClick = {
-                    scope.launch {
-
-                        val request = RegistrarHistorialRequest(
-                            correoPaciente = correo,
-                            correoDoctor = UserSession.correo,
-                            edad = edad.toIntOrNull() ?: 0,
-                            sexo = sexo,
-                            padecimientos = padecimientos.split(",").map { it.trim() },
-                            medicoAsignado = UserSession.nombre,
-                            especialidadMedico = especialidad,
-                            medicamentos = listOf(MedicamentoRequest(medNombre, medDosis, medHorario))
+                        PrimaryTextField(
+                            value = edad,
+                            onValueChange = { edad = it },
+                            label = "Edad",
+                            placeholder = "Ej. 28"
                         )
 
-                        val guardado = repository.registrarHistorial(request)
-                        mensaje = if (guardado) "Historial guardado correctamente" else "Error al guardar"
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text("Sexo", fontSize = 13.sp, color = TextSecondary, fontWeight = FontWeight.SemiBold)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            listOf("Masculino", "Femenino", "Otro").forEach { opcion ->
+                                FilterChip(
+                                    selected = sexo == opcion,
+                                    onClick = { sexo = opcion },
+                                    label = { Text(opcion, fontSize = 12.sp) },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = PurpleAccent,
+                                        selectedLabelColor = White
+                                    )
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        PrimaryTextField(
+                            value = padecimientos,
+                            onValueChange = { padecimientos = it },
+                            label = "Padecimientos (separados por coma)",
+                            placeholder = "Diabetes, Hipertensión"
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        BuscadorSimple(
+                            valor = especialidad,
+                            onValorChange = { especialidad = it },
+                            opciones = Especialidades.lista,
+                            expandido = expandidoEspecialidad,
+                            onExpandidoChange = { expandidoEspecialidad = it },
+                            etiqueta = "Tu especialidad",
+                            placeholder = "Busca tu especialidad"
+                        )
 
                     }
                 }
-            )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TarjetaMedicamentoForm(
+                    titulo = "Receta médica",
+                    medNombre = medNombre, onMedNombreChange = { medNombre = it },
+                    expandidoMed = expandidoMed, onExpandidoMedChange = { expandidoMed = it },
+                    medDosis = medDosis, onMedDosisChange = { medDosis = it },
+                    expandidoDosis = expandidoDosis, onExpandidoDosisChange = { expandidoDosis = it },
+                    medHorario = medHorario, onMedHorarioChange = { medHorario = it },
+                    medPadecimiento = medPadecimiento, onMedPadecimientoChange = { medPadecimiento = it },
+                    medObservaciones = medObservaciones, onMedObservacionesChange = { medObservaciones = it }
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                PrimaryButton(
+                    text = "Guardar historial",
+                    onClick = {
+                        scope.launch {
+
+                            val request = RegistrarHistorialRequest(
+                                correoPaciente = correo,
+                                correoDoctor = UserSession.correo,
+                                edad = edad.toIntOrNull() ?: 0,
+                                sexo = sexo,
+                                padecimientos = padecimientos.split(",").map { it.trim() },
+                                medicoAsignado = UserSession.nombre,
+                                especialidadMedico = especialidad,
+                                medicamentos = listOf(MedicamentoRequest(medNombre, medDosis, medHorario))
+                            )
+
+                            val guardado = doctorRepository.registrarHistorial(request)
+                            mensaje = if (guardado) "Historial guardado correctamente" else "Error al guardar"
+
+                        }
+                    }
+                )
+
+            } else {
+
+                // ---------- CASO 2: PACIENTE YA REGISTRADO — historial + agregar consulta ----------
+
+                val info = infoExistente!!
+
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    colors = CardDefaults.cardColors(containerColor = White)
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+
+                        TituloConIcono(icono = Icons.Default.Assignment, texto = "Historial clínico", color = PurpleAccent)
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        FilaDato("Edad", "${info.edad} años")
+                        FilaDato("Sexo", info.sexo)
+                        FilaDato("Padecimientos", info.padecimientos.joinToString(", "))
+                        FilaDato("Especialidad", info.especialidadMedico)
+
+                        if (info.medicamentos.isNotEmpty()) {
+
+                            Spacer(modifier = Modifier.height(12.dp))
+                            HorizontalDivider()
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Text("Medicamentos registrados", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
+
+                            info.medicamentos.forEach { med ->
+                                Column(modifier = Modifier.padding(top = 10.dp)) {
+                                    Text("💊 ${med.nombre} — ${med.dosis}", fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 14.sp)
+                                    Text("⏰ ${med.horario}", color = PurpleAccent, fontSize = 12.sp)
+                                    if (med.padecimiento.isNotBlank()) {
+                                        Text("Para: ${med.padecimiento}", color = TextSecondary, fontSize = 12.sp)
+                                    }
+                                    if (med.observaciones.isNotBlank()) {
+                                        Text("Obs: ${med.observaciones}", color = TextSecondary, fontSize = 12.sp)
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TarjetaMedicamentoForm(
+                    titulo = "Registrar consulta / nuevo medicamento",
+                    medNombre = medNombre, onMedNombreChange = { medNombre = it },
+                    expandidoMed = expandidoMed, onExpandidoMedChange = { expandidoMed = it },
+                    medDosis = medDosis, onMedDosisChange = { medDosis = it },
+                    expandidoDosis = expandidoDosis, onExpandidoDosisChange = { expandidoDosis = it },
+                    medHorario = medHorario, onMedHorarioChange = { medHorario = it },
+                    medPadecimiento = medPadecimiento, onMedPadecimientoChange = { medPadecimiento = it },
+                    medObservaciones = medObservaciones, onMedObservacionesChange = { medObservaciones = it }
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                PrimaryButton(
+                    text = "Agregar al expediente",
+                    onClick = {
+                        scope.launch {
+
+                            val request = AgregarMedicamentoRequest(
+                                correoPaciente = correo,
+                                medicamento = MedicamentoCompleto(
+                                    nombre = medNombre,
+                                    dosis = medDosis,
+                                    horario = medHorario,
+                                    padecimiento = medPadecimiento,
+                                    observaciones = medObservaciones
+                                )
+                            )
+
+                            val guardado = pacienteRepository.agregarMedicamento(request)
+
+                            mensaje = if (guardado) "Consulta agregada al expediente" else "Error al guardar"
+
+                            if (guardado) {
+                                infoExistente = pacienteRepository.obtenerInfo(correo)
+                                medNombre = ""; medDosis = ""; medHorario = ""; medPadecimiento = ""; medObservaciones = ""
+                            }
+
+                        }
+                    }
+                )
+
+            }
 
             if (mensaje.isNotBlank()) {
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(mensaje, color = if (mensaje.contains("correctamente")) Success else Error)
+                Text(mensaje, color = if (mensaje.contains("correctamente") || mensaje.contains("agregada")) Success else Error)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -225,6 +312,142 @@ fun PantallaDetallePaciente(correo: String) {
 
     }
 
+}
+
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+private fun TarjetaMedicamentoForm(
+    titulo: String,
+    medNombre: String, onMedNombreChange: (String) -> Unit,
+    expandidoMed: Boolean, onExpandidoMedChange: (Boolean) -> Unit,
+    medDosis: String, onMedDosisChange: (String) -> Unit,
+    expandidoDosis: Boolean, onExpandidoDosisChange: (Boolean) -> Unit,
+    medHorario: String, onMedHorarioChange: (String) -> Unit,
+    medPadecimiento: String, onMedPadecimientoChange: (String) -> Unit,
+    medObservaciones: String, onMedObservacionesChange: (String) -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = White)
+    ) {
+        Column(modifier = Modifier.padding(18.dp)) {
+
+            TituloConIcono(icono = Icons.Default.Medication, texto = titulo, color = Success)
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            BuscadorSimple(
+                valor = medNombre,
+                onValorChange = onMedNombreChange,
+                opciones = Catalogos.medicamentosComunes,
+                expandido = expandidoMed,
+                onExpandidoChange = onExpandidoMedChange,
+                etiqueta = "Nombre del medicamento",
+                placeholder = "Ej. Metformina"
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            BuscadorSimple(
+                valor = medDosis,
+                onValorChange = onMedDosisChange,
+                opciones = Catalogos.dosisComunes,
+                expandido = expandidoDosis,
+                onExpandidoChange = onExpandidoDosisChange,
+                etiqueta = "Dosis",
+                placeholder = "Ej. 850 mg"
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            PrimaryTextField(
+                value = medHorario,
+                onValueChange = onMedHorarioChange,
+                label = "Horario",
+                placeholder = "Ej. 08:00,14:00,20:00"
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            PrimaryTextField(
+                value = medPadecimiento,
+                onValueChange = onMedPadecimientoChange,
+                label = "Padecimiento que trata",
+                placeholder = "Ej. Diabetes tipo 2"
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            PrimaryTextField(
+                value = medObservaciones,
+                onValueChange = onMedObservacionesChange,
+                label = "Observaciones de la consulta",
+                placeholder = "Ej. Tomar con alimentos"
+            )
+
+        }
+    }
+}
+
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+private fun BuscadorSimple(
+    valor: String,
+    onValorChange: (String) -> Unit,
+    opciones: List<String>,
+    expandido: Boolean,
+    onExpandidoChange: (Boolean) -> Unit,
+    etiqueta: String,
+    placeholder: String
+) {
+    val filtradas = if (valor.isBlank()) opciones else opciones.filter { it.contains(valor, ignoreCase = true) }
+
+    ExposedDropdownMenuBox(
+        expanded = expandido,
+        onExpandedChange = onExpandidoChange
+    ) {
+        OutlinedTextField(
+            value = valor,
+            onValueChange = {
+                onValorChange(it)
+                onExpandidoChange(true)
+            },
+            label = { Text(etiqueta) },
+            placeholder = { Text(placeholder) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandido) },
+            modifier = Modifier.fillMaxWidth().menuAnchor(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = PrimaryBlue,
+                unfocusedBorderColor = TextSecondary
+            )
+        )
+
+        if (filtradas.isNotEmpty()) {
+            ExposedDropdownMenu(
+                expanded = expandido,
+                onDismissRequest = { onExpandidoChange(false) }
+            ) {
+                filtradas.forEach { opcion ->
+                    DropdownMenuItem(
+                        text = { Text(opcion) },
+                        onClick = {
+                            onValorChange(opcion)
+                            onExpandidoChange(false)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FilaDato(titulo: String, valor: String) {
+    Row(modifier = Modifier.padding(vertical = 3.dp)) {
+        Text("$titulo: ", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
+        Text(valor, fontSize = 13.sp, color = TextPrimary)
+    }
 }
 
 @Composable
