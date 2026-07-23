@@ -79,6 +79,10 @@ kotlin {
 
             // NUEVO: para manejar fechas (DatePicker de las consultas)
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+
+            // NUEVO: para mostrar imagenes desde una URL (estudios del paciente)
+            implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+            implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.4")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
