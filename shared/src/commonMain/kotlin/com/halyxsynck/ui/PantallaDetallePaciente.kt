@@ -20,6 +20,7 @@ import com.halyxsynck.components.PrimaryButton
 import com.halyxsynck.components.PrimaryTextField
 import com.halyxsynck.model.*
 import com.halyxsynck.repository.DoctorRepository
+import com.halyxsynck.repository.EstudioRepository
 import com.halyxsynck.repository.PacienteRepository
 import com.halyxsynck.session.UserSession
 import com.halyxsynck.theme.*
@@ -36,19 +37,17 @@ fun PantallaDetallePaciente(correo: String) {
     var cargando by remember { mutableStateOf(true) }
     var infoExistente by remember { mutableStateOf<PacienteInfo?>(null) }
 
-    // Campos del formulario de registro inicial
     var edad by remember { mutableStateOf("") }
     var sexo by remember { mutableStateOf("Masculino") }
     var padecimientos by remember { mutableStateOf("") }
     var especialidad by remember { mutableStateOf("") }
     var expandidoEspecialidad by remember { mutableStateOf(false) }
 
-    // Campos del medicamento (aplica en ambos casos: registro inicial o consulta nueva)
     var medNombre by remember { mutableStateOf("") }
     var expandidoMed by remember { mutableStateOf(false) }
     var medDosis by remember { mutableStateOf("") }
     var expandidoDosis by remember { mutableStateOf(false) }
-    var medHorario by remember { mutableStateOf("") }
+    var medHorarios by remember { mutableStateOf(listOf<String>()) }
     var medPadecimiento by remember { mutableStateOf("") }
     var medObservaciones by remember { mutableStateOf("") }
 
@@ -106,8 +105,6 @@ fun PantallaDetallePaciente(correo: String) {
                 }
 
             } else if (infoExistente == null) {
-
-                // ---------- CASO 1: PACIENTE NUEVO — formulario completo ----------
 
                 Card(
                     shape = RoundedCornerShape(16.dp),
@@ -177,7 +174,7 @@ fun PantallaDetallePaciente(correo: String) {
                     expandidoMed = expandidoMed, onExpandidoMedChange = { expandidoMed = it },
                     medDosis = medDosis, onMedDosisChange = { medDosis = it },
                     expandidoDosis = expandidoDosis, onExpandidoDosisChange = { expandidoDosis = it },
-                    medHorario = medHorario, onMedHorarioChange = { medHorario = it },
+                    medHorarios = medHorarios, onMedHorariosChange = { medHorarios = it },
                     medPadecimiento = medPadecimiento, onMedPadecimientoChange = { medPadecimiento = it },
                     medObservaciones = medObservaciones, onMedObservacionesChange = { medObservaciones = it }
                 )
@@ -197,7 +194,7 @@ fun PantallaDetallePaciente(correo: String) {
                                 padecimientos = padecimientos.split(",").map { it.trim() },
                                 medicoAsignado = UserSession.nombre,
                                 especialidadMedico = especialidad,
-                                medicamentos = listOf(MedicamentoRequest(medNombre, medDosis, medHorario))
+                                medicamentos = listOf(MedicamentoRequest(medNombre, medDosis, medHorarios.joinToString(",")))
                             )
 
                             val guardado = doctorRepository.registrarHistorial(request)
@@ -208,8 +205,6 @@ fun PantallaDetallePaciente(correo: String) {
                 )
 
             } else {
-
-                // ---------- CASO 2: PACIENTE YA REGISTRADO — historial + agregar consulta ----------
 
                 val info = infoExistente!!
 
@@ -257,13 +252,17 @@ fun PantallaDetallePaciente(correo: String) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                TarjetaEstudiosPaciente(correo = correo)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 TarjetaMedicamentoForm(
                     titulo = "Registrar consulta / nuevo medicamento",
                     medNombre = medNombre, onMedNombreChange = { medNombre = it },
                     expandidoMed = expandidoMed, onExpandidoMedChange = { expandidoMed = it },
                     medDosis = medDosis, onMedDosisChange = { medDosis = it },
                     expandidoDosis = expandidoDosis, onExpandidoDosisChange = { expandidoDosis = it },
-                    medHorario = medHorario, onMedHorarioChange = { medHorario = it },
+                    medHorarios = medHorarios, onMedHorariosChange = { medHorarios = it },
                     medPadecimiento = medPadecimiento, onMedPadecimientoChange = { medPadecimiento = it },
                     medObservaciones = medObservaciones, onMedObservacionesChange = { medObservaciones = it }
                 )
@@ -280,7 +279,7 @@ fun PantallaDetallePaciente(correo: String) {
                                 medicamento = MedicamentoCompleto(
                                     nombre = medNombre,
                                     dosis = medDosis,
-                                    horario = medHorario,
+                                    horario = medHorarios.joinToString(","),
                                     padecimiento = medPadecimiento,
                                     observaciones = medObservaciones
                                 )
@@ -292,7 +291,7 @@ fun PantallaDetallePaciente(correo: String) {
 
                             if (guardado) {
                                 infoExistente = pacienteRepository.obtenerInfo(correo)
-                                medNombre = ""; medDosis = ""; medHorario = ""; medPadecimiento = ""; medObservaciones = ""
+                                medNombre = ""; medDosis = ""; medHorarios = listOf(); medPadecimiento = ""; medObservaciones = ""
                             }
 
                         }
@@ -314,6 +313,49 @@ fun PantallaDetallePaciente(correo: String) {
 
 }
 
+@Composable
+private fun TarjetaEstudiosPaciente(correo: String) {
+
+    val estudioRepository = remember { EstudioRepository() }
+    var estudios by remember { mutableStateOf<List<EstudioInfo>>(emptyList()) }
+    var cargando by remember { mutableStateOf(true) }
+
+    LaunchedEffect(correo) {
+        estudios = estudioRepository.obtenerEstudios(correo)
+        cargando = false
+    }
+
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = White)
+    ) {
+        Column(modifier = Modifier.padding(18.dp)) {
+
+            TituloConIcono(icono = Icons.Default.Biotech, texto = "Estudios del paciente", color = SecondaryCyan)
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            if (cargando) {
+                CircularProgressIndicator(color = SecondaryCyan, modifier = Modifier.size(20.dp))
+            } else if (estudios.isEmpty()) {
+                Text("El paciente no ha subido ningún estudio todavía.", color = TextSecondary, fontSize = 13.sp)
+            } else {
+                estudios.forEach { estudio ->
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+                        Icon(Icons.Default.Description, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(estudio.descripcion.ifBlank { "Estudio" }, color = TextPrimary, fontSize = 13.sp, modifier = Modifier.weight(1f))
+                        Text(estudio.fecha, color = TextSecondary, fontSize = 12.sp)
+                    }
+                }
+            }
+
+        }
+    }
+
+}
+
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 private fun TarjetaMedicamentoForm(
@@ -322,10 +364,14 @@ private fun TarjetaMedicamentoForm(
     expandidoMed: Boolean, onExpandidoMedChange: (Boolean) -> Unit,
     medDosis: String, onMedDosisChange: (String) -> Unit,
     expandidoDosis: Boolean, onExpandidoDosisChange: (Boolean) -> Unit,
-    medHorario: String, onMedHorarioChange: (String) -> Unit,
+    medHorarios: List<String>, onMedHorariosChange: (List<String>) -> Unit,
     medPadecimiento: String, onMedPadecimientoChange: (String) -> Unit,
     medObservaciones: String, onMedObservacionesChange: (String) -> Unit
 ) {
+
+    var mostrarTimePicker by remember { mutableStateOf(false) }
+    val timePickerState = rememberTimePickerState(is24Hour = true)
+
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -359,16 +405,42 @@ private fun TarjetaMedicamentoForm(
                 placeholder = "Ej. 850 mg"
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            PrimaryTextField(
-                value = medHorario,
-                onValueChange = onMedHorarioChange,
-                label = "Horario",
-                placeholder = "Ej. 08:00,14:00,20:00"
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Schedule, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Horario de toma", fontSize = 13.sp, color = TextSecondary, fontWeight = FontWeight.SemiBold)
+            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (medHorarios.isNotEmpty()) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    medHorarios.forEach { hora ->
+                        AssistChip(
+                            onClick = { onMedHorariosChange(medHorarios - hora) },
+                            label = { Text(hora, fontSize = 12.sp) },
+                            trailingIcon = { Icon(Icons.Default.Close, contentDescription = "Quitar", modifier = Modifier.size(14.dp)) },
+                            colors = AssistChipDefaults.assistChipColors(containerColor = SecondaryCyan.copy(alpha = 0.15f))
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            OutlinedButton(
+                onClick = { mostrarTimePicker = true },
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = PurpleAccent)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Agregar horario")
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
 
             PrimaryTextField(
                 value = medPadecimiento,
@@ -388,6 +460,34 @@ private fun TarjetaMedicamentoForm(
 
         }
     }
+
+    if (mostrarTimePicker) {
+        AlertDialog(
+            onDismissRequest = { mostrarTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val h = timePickerState.hour.toString().padStart(2, '0')
+                    val m = timePickerState.minute.toString().padStart(2, '0')
+                    val nueva = "$h:$m"
+                    if (nueva !in medHorarios) {
+                        onMedHorariosChange((medHorarios + nueva).sorted())
+                    }
+                    mostrarTimePicker = false
+                }) {
+                    Text("Agregar", color = PurpleAccent)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarTimePicker = false }) {
+                    Text("Cancelar", color = TextSecondary)
+                }
+            },
+            text = {
+                TimePicker(state = timePickerState)
+            }
+        )
+    }
+
 }
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
