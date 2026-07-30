@@ -19,7 +19,7 @@ actual fun rememberCapturadorFoto(onFoto: (ByteArray) -> Unit): () -> Unit {
     ) { bitmap: Bitmap? ->
         if (bitmap != null) {
             val stream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, stream)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, stream)
             onFoto(stream.toByteArray())
         }
     }
