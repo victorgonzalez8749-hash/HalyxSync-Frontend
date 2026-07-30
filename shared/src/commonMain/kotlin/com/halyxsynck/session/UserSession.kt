@@ -10,6 +10,8 @@ object UserSession {
 
     var especialidad: String = ""
 
+    var cedulaProfesional: String = ""
+
     var contrasenaGuardada: String = ""
 
     var correoParaHuella: String = ""

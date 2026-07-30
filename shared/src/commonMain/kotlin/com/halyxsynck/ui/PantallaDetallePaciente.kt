@@ -237,14 +237,37 @@ fun PantallaDetallePaciente(correo: String) {
                             Text("Medicamentos registrados", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
 
                             info.medicamentos.forEach { med ->
-                                Column(modifier = Modifier.padding(top = 10.dp)) {
-                                    Text("💊 ${med.nombre} — ${med.dosis}", fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 14.sp)
-                                    Text("⏰ ${med.horario}", color = PurpleAccent, fontSize = 12.sp)
-                                    if (med.padecimiento.isNotBlank()) {
-                                        Text("Para: ${med.padecimiento}", color = TextSecondary, fontSize = 12.sp)
-                                    }
-                                    if (med.observaciones.isNotBlank()) {
-                                        Text("Obs: ${med.observaciones}", color = TextSecondary, fontSize = 12.sp)
+                                Card(
+                                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Background),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                                ) {
+                                    Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.Top) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(36.dp)
+                                                .clip(RoundedCornerShape(10.dp))
+                                                .background(Success.copy(alpha = 0.15f)),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(Icons.Default.Medication, contentDescription = null, tint = Success, modifier = Modifier.size(18.dp))
+                                        }
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Column {
+                                            Text("${med.nombre} — ${med.dosis}", fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 14.sp)
+                                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 3.dp)) {
+                                                Icon(Icons.Default.Schedule, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(13.dp))
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text(med.horario, color = PurpleAccent, fontSize = 12.sp)
+                                            }
+                                            if (med.padecimiento.isNotBlank()) {
+                                                Text("Para: ${med.padecimiento}", color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(top = 2.dp))
+                                            }
+                                            if (med.observaciones.isNotBlank()) {
+                                                Text("Obs: ${med.observaciones}", color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(top = 2.dp))
+                                            }
+                                        }
                                     }
                                 }
                             }

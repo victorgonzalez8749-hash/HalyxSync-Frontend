@@ -22,8 +22,13 @@ class RegisterViewModel {
         telefono: String,
         contrasena: String,
         cedula: String,
-        especialidad: String
+        especialidad: String,
+        edad: String,
+        sexo: String,
+        padecimientos: List<String>
     ): Boolean {
+
+        val esDoctor = RegisterSession.rol == "DOCTOR"
 
         val respuesta = repository.registrar(
 
@@ -43,17 +48,15 @@ class RegisterViewModel {
 
                 rol = RegisterSession.rol,
 
-                cedulaProfesional =
-                    if (RegisterSession.rol == "DOCTOR")
-                        cedula
-                    else
-                        null,
+                cedulaProfesional = if (esDoctor) cedula else null,
 
-                especialidad =
-                    if (RegisterSession.rol == "DOCTOR")
-                        especialidad
-                    else
-                        null
+                especialidad = if (esDoctor) especialidad else null,
+
+                edad = if (!esDoctor) edad.toIntOrNull() else null,
+
+                sexo = if (!esDoctor) sexo else null,
+
+                padecimientos = if (!esDoctor) padecimientos else null
 
             )
 

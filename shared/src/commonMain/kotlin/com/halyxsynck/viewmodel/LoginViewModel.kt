@@ -44,6 +44,8 @@ class LoginViewModel {
 
             UserSession.especialidad = respuesta.especialidad ?: ""
 
+            UserSession.cedulaProfesional = respuesta.cedulaProfesional ?: ""
+
             UserSession.correo = correo
 
             UserSession.contrasenaGuardada = contrasena

@@ -17,4 +17,14 @@ object Catalogos {
         "250 mg", "500 mg", "850 mg", "1 g", "5 ml", "10 ml", "15 ml", "20 ml"
     )
 
+    // NUEVO
+    val padecimientosComunes = listOf(
+        "Diabetes", "Hipertensión arterial", "Asma", "Gastritis", "Colitis",
+        "Artritis", "Migraña", "Ansiedad", "Depresión", "Obesidad",
+        "Hipotiroidismo", "Hipertiroidismo", "Anemia", "Alergias", "Insomnio",
+        "Colesterol alto", "Triglicéridos altos", "Reflujo gastroesofágico",
+        "Dolor de espalda crónico", "Fibromialgia", "Osteoporosis",
+        "Enfermedad renal crónica", "Epilepsia", "Psoriasis", "Vitíligo"
+    )
+
 }
