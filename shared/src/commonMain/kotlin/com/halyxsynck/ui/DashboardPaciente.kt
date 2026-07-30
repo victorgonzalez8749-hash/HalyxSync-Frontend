@@ -1,6 +1,7 @@
 package com.halyxsynck.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -19,6 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import com.halyxsynck.components.PrimaryButton
 import com.halyxsynck.model.CitaInfo
@@ -54,6 +56,7 @@ fun DashboardPaciente() {
     var fotosPendientes by remember { mutableStateOf(listOf<ByteArray>()) }
     var subiendo by remember { mutableStateOf(false) }
     var mensajeEstudio by remember { mutableStateOf("") }
+    var imagenSeleccionada by remember { mutableStateOf<String?>(null) }
 
     val tomarFoto = rememberCapturadorFoto { bytes ->
         if (fotosPendientes.size < 3) {
@@ -278,7 +281,8 @@ fun DashboardPaciente() {
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(180.dp)
-                                            .clip(RoundedCornerShape(12.dp)),
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .clickable { imagenSeleccionada = estudio.url },
                                         contentScale = ContentScale.Crop
                                     )
                                 }
@@ -304,6 +308,7 @@ fun DashboardPaciente() {
                                     if (index < fotosPendientes.size) {
                                         Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Success, modifier = Modifier.size(28.dp))
                                     } else if (index == fotosPendientes.size) {
+
                                         IconButton(onClick = { tomarFoto() }) {
                                             Box(
                                                 modifier = Modifier
@@ -315,6 +320,7 @@ fun DashboardPaciente() {
                                                 Icon(Icons.Default.CameraAlt, contentDescription = "Tomar foto", tint = White, modifier = Modifier.size(22.dp))
                                             }
                                         }
+
                                     } else {
                                         Icon(Icons.Default.PhotoCamera, contentDescription = null, tint = TextSecondary.copy(alpha = 0.3f), modifier = Modifier.size(22.dp))
                                     }
@@ -401,6 +407,26 @@ fun DashboardPaciente() {
 
         }
 
+    }
+
+    if (imagenSeleccionada != null) {
+        Dialog(onDismissRequest = { imagenSeleccionada = null }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { imagenSeleccionada = null },
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = imagenSeleccionada,
+                    contentDescription = "Estudio en pantalla completa",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
     }
 
 }

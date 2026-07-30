@@ -1,6 +1,7 @@
 package com.halyxsynck.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -17,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import com.halyxsynck.components.PrimaryButton
 import com.halyxsynck.components.PrimaryTextField
@@ -321,6 +323,7 @@ private fun TarjetaEstudiosPaciente(correo: String) {
     val estudioRepository = remember { EstudioRepository() }
     var estudios by remember { mutableStateOf<List<EstudioInfo>>(emptyList()) }
     var cargando by remember { mutableStateOf(true) }
+    var imagenSeleccionada by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(correo) {
         estudios = estudioRepository.obtenerEstudios(correo)
@@ -363,7 +366,8 @@ private fun TarjetaEstudiosPaciente(correo: String) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(220.dp)
-                                .clip(RoundedCornerShape(12.dp)),
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { imagenSeleccionada = estudio.url },
                             contentScale = ContentScale.Crop
                         )
 
@@ -371,6 +375,26 @@ private fun TarjetaEstudiosPaciente(correo: String) {
                 }
             }
 
+        }
+    }
+
+    if (imagenSeleccionada != null) {
+        Dialog(onDismissRequest = { imagenSeleccionada = null }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { imagenSeleccionada = null },
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = imagenSeleccionada,
+                    contentDescription = "Estudio en pantalla completa",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Fit
+                )
+            }
         }
     }
 
