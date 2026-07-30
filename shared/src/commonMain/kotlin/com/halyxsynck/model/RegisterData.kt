@@ -23,6 +23,13 @@ data class RegisterData(
 
     val cedulaProfesional: String = "",
 
-    val especialidad: String = ""
+    val especialidad: String = "",
+
+    // NUEVO: solo aplica cuando rol == "PACIENTE"
+    val edad: String = "",
+
+    val sexo: String = "Masculino",
+
+    val padecimientos: List<String> = emptyList()
 
 )

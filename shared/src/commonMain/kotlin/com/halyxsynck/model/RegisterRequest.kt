@@ -21,6 +21,13 @@ data class RegisterRequest(
 
     val cedulaProfesional: String? = null,
 
-    val especialidad: String? = null
+    val especialidad: String? = null,
+
+    // NUEVO
+    val edad: Int? = null,
+
+    val sexo: String? = null,
+
+    val padecimientos: List<String>? = null
 
 )

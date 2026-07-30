@@ -80,7 +80,9 @@ fun PantallaPerfilDoctor() {
 
             Column(modifier = Modifier.padding(20.dp)) {
 
-                FilaPerfil(icono = Icons.Default.Email, color = SecondaryCyan, titulo = "Correo", valor = UserSession.correo)
+                FilaPerfil(icono = Icons.Default.Person, color = PrimaryBlue, titulo = "Nombre completo", valor = "Dr. ${UserSession.nombre}")
+                Spacer(modifier = Modifier.height(12.dp))
+                FilaPerfil(icono = Icons.Default.Badge, color = SecondaryCyan, titulo = "Cédula profesional", valor = if (UserSession.cedulaProfesional.isNotBlank()) UserSession.cedulaProfesional else "No especificada")
                 Spacer(modifier = Modifier.height(12.dp))
                 FilaPerfil(
                     icono = Icons.Default.LocalHospital,
@@ -89,7 +91,7 @@ fun PantallaPerfilDoctor() {
                     valor = if (UserSession.especialidad.isNotBlank()) UserSession.especialidad else "No especificada"
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                FilaPerfil(icono = Icons.Default.Badge, color = PrimaryBlue, titulo = "Rol", valor = UserSession.rol)
+                FilaPerfil(icono = Icons.Default.Email, color = Success, titulo = "Correo", valor = UserSession.correo)
 
             }
 
