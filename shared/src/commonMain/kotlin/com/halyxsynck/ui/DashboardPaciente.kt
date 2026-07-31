@@ -160,24 +160,16 @@ fun DashboardPaciente() {
                     TarjetaInfo(
                         icono = Icons.Default.MedicalServices,
                         colorIcono = PrimaryBlue,
-                        titulo = "Médico asignado"
+                        titulo = "Mis Médicos"
                     ) {
-                        Text(info!!.medicoAsignado, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-                        Text(info!!.especialidadMedico, color = TextSecondary, fontSize = 13.sp)
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    TarjetaInfo(
-                        icono = Icons.Default.Assignment,
-                        colorIcono = SecondaryCyan,
-                        titulo = "Padecimientos"
-                    ) {
-                        info!!.padecimientos.forEach { p ->
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 2.dp)) {
-                                Icon(Icons.Default.FiberManualRecord, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(8.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(p, color = TextPrimary)
+                        info!!.medicos.forEach { medico ->
+                            Column(modifier = Modifier.padding(vertical = 6.dp)) {
+                                Text(medico.nombre, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                                Text(medico.especialidad, color = PrimaryBlue, fontSize = 12.sp)
+                                Text("Atiende: ${medico.padecimientos.joinToString(", ")}", color = TextSecondary, fontSize = 12.sp)
+                            }
+                            if (medico != info!!.medicos.last()) {
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                             }
                         }
                     }
@@ -233,8 +225,6 @@ fun DashboardPaciente() {
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
-
-                // ---------- SECCIÓN: MIS ESTUDIOS ----------
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
