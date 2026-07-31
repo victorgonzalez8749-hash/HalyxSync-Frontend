@@ -58,7 +58,7 @@ fun PantallaDetallePaciente(correo: String) {
     var mensaje by remember { mutableStateOf("") }
 
     LaunchedEffect(correo) {
-        infoExistente = pacienteRepository.obtenerInfo(correo)
+        infoExistente = pacienteRepository.obtenerInfoParaDoctor(correo, UserSession.correo)
         cargando = false
     }
 
@@ -319,6 +319,7 @@ fun PantallaDetallePaciente(correo: String) {
 
                             val request = AgregarMedicamentoRequest(
                                 correoPaciente = correo,
+                                correoDoctor = UserSession.correo,
                                 medicamento = MedicamentoCompleto(
                                     nombre = medNombre,
                                     dosis = medDosis,
@@ -333,7 +334,7 @@ fun PantallaDetallePaciente(correo: String) {
                             mensaje = if (guardado) "Consulta agregada al expediente" else "Error al guardar"
 
                             if (guardado) {
-                                infoExistente = pacienteRepository.obtenerInfo(correo)
+                                infoExistente = pacienteRepository.obtenerInfoParaDoctor(correo, UserSession.correo)
                                 medNombre = ""; medDosis = ""; medHorarios = listOf(); medPadecimiento = ""; medObservaciones = ""
                             }
 
