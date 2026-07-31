@@ -14,5 +14,6 @@ data class MedicamentoCompleto(
 @Serializable
 data class AgregarMedicamentoRequest(
     val correoPaciente: String,
+    val correoDoctor: String,
     val medicamento: MedicamentoCompleto
 )

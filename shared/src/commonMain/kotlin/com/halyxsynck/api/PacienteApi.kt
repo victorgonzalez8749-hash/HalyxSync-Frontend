@@ -16,20 +16,26 @@ class PacienteApi {
     suspend fun obtenerInfo(correo: String): PacienteInfo? {
 
         return try {
-
             client.get("$baseUrl/paciente/info?correo=$correo").body()
-
         } catch (e: Exception) {
-
             e.printStackTrace()
-
             null
-
         }
 
     }
 
-    // NUEVO: agregar un medicamento sin borrar los existentes
+    // NUEVO: solo la info que le corresponde a ese doctor
+    suspend fun obtenerInfoParaDoctor(correoPaciente: String, correoDoctor: String): PacienteInfo? {
+
+        return try {
+            client.get("$baseUrl/paciente/info-doctor?correoPaciente=$correoPaciente&correoDoctor=$correoDoctor").body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+
+    }
+
     suspend fun agregarMedicamento(request: AgregarMedicamentoRequest): Boolean {
 
         return try {
@@ -42,11 +48,8 @@ class PacienteApi {
             respuesta.status.value == 200
 
         } catch (e: Exception) {
-
             e.printStackTrace()
-
             false
-
         }
 
     }

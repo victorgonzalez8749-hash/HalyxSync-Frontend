@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.halyxsynck.FechaHoy
 import com.halyxsynck.components.DoctorAvatar
 import com.halyxsynck.navigation.Navigator
 import com.halyxsynck.navigation.Screen
@@ -37,9 +38,11 @@ fun DashboardDoctor() {
     val repository = remember { DoctorRepository() }
 
     var totalPacientes by remember { mutableStateOf<Int?>(null) }
+    var citasHoyCount by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(Unit) {
         totalPacientes = repository.obtenerPacientes(UserSession.correo).size
+        citasHoyCount = repository.obtenerCitasHoy(UserSession.correo, FechaHoy.obtener()).size
     }
 
     ModalNavigationDrawer(
@@ -155,11 +158,11 @@ fun DashboardDoctor() {
                         valor = totalPacientes?.toString() ?: "—"
                     )
                     TarjetaStat(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).clickable { Navigator.navigate(Screen.CitasHoy) },
                         icono = Icons.Default.CalendarToday,
                         colorIcono = SecondaryCyan,
                         titulo = "Citas hoy",
-                        valor = "—"
+                        valor = citasHoyCount?.toString() ?: "—"
                     )
                 }
 
@@ -230,12 +233,12 @@ private fun TarjetaStat(
         Column(modifier = Modifier.padding(16.dp)) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(14.dp))
                     .background(colorIcono.copy(alpha = 0.15f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(icono, contentDescription = null, tint = colorIcono, modifier = Modifier.size(20.dp))
+                Icon(icono, contentDescription = null, tint = colorIcono, modifier = Modifier.size(26.dp))
             }
             Spacer(modifier = Modifier.height(10.dp))
             Text(titulo, fontSize = 12.sp, color = TextSecondary)
@@ -264,12 +267,12 @@ private fun AccesoRapido(
         ) {
             Box(
                 modifier = Modifier
-                    .size(46.dp)
+                    .size(58.dp)
                     .clip(CircleShape)
                     .background(colorFondo),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(icono, contentDescription = null, tint = White, modifier = Modifier.size(22.dp))
+                Icon(icono, contentDescription = null, tint = White, modifier = Modifier.size(30.dp))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(texto, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary, textAlign = TextAlign.Center)

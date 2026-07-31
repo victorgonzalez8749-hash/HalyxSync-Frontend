@@ -13,6 +13,10 @@ class PacienteRepository {
     }
 
     // NUEVO
+    suspend fun obtenerInfoParaDoctor(correoPaciente: String, correoDoctor: String): PacienteInfo? {
+        return api.obtenerInfoParaDoctor(correoPaciente, correoDoctor)
+    }
+
     suspend fun agregarMedicamento(request: AgregarMedicamentoRequest): Boolean {
         return api.agregarMedicamento(request)
     }

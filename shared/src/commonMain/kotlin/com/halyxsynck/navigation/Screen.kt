@@ -19,12 +19,13 @@ sealed class Screen {
 
     object DashboardAdmin : Screen()
 
-    // NUEVO: pantallas del menú lateral del doctor
     object MisPacientes : Screen()
 
     object PerfilDoctor : Screen()
 
     object Consultas : Screen()
+
+    object CitasHoy : Screen()
 
     data class DetallePaciente(val correo: String) : Screen()
 
