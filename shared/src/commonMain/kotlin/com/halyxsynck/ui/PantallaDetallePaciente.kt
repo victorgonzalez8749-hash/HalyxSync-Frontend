@@ -225,8 +225,24 @@ fun PantallaDetallePaciente(correo: String) {
 
                         FilaDato("Edad", "${info.edad} años")
                         FilaDato("Sexo", info.sexo)
-                        FilaDato("Padecimientos", info.padecimientos.joinToString(", "))
-                        FilaDato("Especialidad", info.especialidadMedico)
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text("Médicos asignados", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
+
+                        info.medicos.forEach { medico ->
+                            Column(modifier = Modifier.padding(top = 8.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.MedicalServices, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(medico.nombre, fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 13.sp)
+                                }
+                                Text(medico.especialidad, color = PurpleAccent, fontSize = 12.sp, modifier = Modifier.padding(start = 20.dp))
+                                Text("Padecimientos: ${medico.padecimientos.joinToString(", ")}", color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(start = 20.dp))
+                            }
+                        }
 
                         if (info.medicamentos.isNotEmpty()) {
 
