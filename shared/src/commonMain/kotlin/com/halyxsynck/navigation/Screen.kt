@@ -27,6 +27,10 @@ sealed class Screen {
 
     object CitasHoy : Screen()
 
+    object Mensajes : Screen()
+
+    object Recetas : Screen()
+
     data class DetallePaciente(val correo: String) : Screen()
 
 }

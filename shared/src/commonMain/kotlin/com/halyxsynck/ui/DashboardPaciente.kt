@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
+import com.halyxsynck.FechaHoy
 import com.halyxsynck.components.PrimaryButton
 import com.halyxsynck.model.CancelarCitaRequest
 import com.halyxsynck.model.CitaInfo
@@ -63,6 +64,10 @@ fun DashboardPaciente() {
     var motivoCancelacion by remember { mutableStateOf("") }
     var cancelando by remember { mutableStateOf(false) }
 
+    val fechaHoy = remember { FechaHoy.obtener() }
+
+    val citasProximas = citas.filter { it.fecha >= fechaHoy && it.estado != "Cancelada" }
+
     val tomarFoto = rememberCapturadorFoto { bytes ->
         if (fotosPendientes.size < 3) {
             fotosPendientes = fotosPendientes + bytes
@@ -91,35 +96,41 @@ fun DashboardPaciente() {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Brush.linearGradient(listOf(PrimaryBlue, PurpleAccent, GradientEnd)))
-                .padding(vertical = 32.dp, horizontal = 20.dp),
+                .padding(vertical = 34.dp, horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Box(
                 modifier = Modifier
-                    .size(84.dp)
+                    .size(92.dp)
                     .clip(CircleShape)
-                    .background(White.copy(alpha = 0.15f)),
+                    .background(White.copy(alpha = 0.18f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Person, contentDescription = null, tint = White, modifier = Modifier.size(44.dp))
+                Icon(Icons.Default.Person, contentDescription = null, tint = White, modifier = Modifier.size(48.dp))
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             Text(
                 text = info?.nombreCompleto ?: UserSession.nombre,
                 color = White,
-                fontSize = 21.sp,
+                fontSize = 23.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Badge, contentDescription = null, tint = White.copy(alpha = 0.85f), modifier = Modifier.size(14.dp))
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Paciente", color = White.copy(alpha = 0.85f), fontSize = 13.sp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(White.copy(alpha = 0.18f))
+                    .padding(horizontal = 12.dp, vertical = 5.dp)
+            ) {
+                Icon(Icons.Default.Badge, contentDescription = null, tint = White, modifier = Modifier.size(14.dp))
+                Spacer(modifier = Modifier.width(5.dp))
+                Text("Paciente", color = White, fontSize = 13.sp)
             }
 
         }
@@ -133,6 +144,37 @@ fun DashboardPaciente() {
                 }
 
             } else {
+
+                // Acceso rápido a Mensajes
+                Card(
+                    modifier = Modifier.fillMaxWidth().clickable { Navigator.navigate(Screen.Mensajes) },
+                    shape = RoundedCornerShape(18.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+                    colors = CardDefaults.cardColors(containerColor = White)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(52.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Brush.linearGradient(listOf(GradientStart, GradientEnd))),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.MailOutline, contentDescription = null, tint = White, modifier = Modifier.size(26.dp))
+                        }
+                        Spacer(modifier = Modifier.width(14.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Mensajes", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                            Text("Comunícate con tu médico", fontSize = 12.sp, color = TextSecondary)
+                        }
+                        Icon(Icons.Default.ChevronRight, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(24.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 if (info == null) {
 
@@ -164,7 +206,7 @@ fun DashboardPaciente() {
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     TarjetaInfo(
                         icono = Icons.Default.MedicalServices,
@@ -172,10 +214,10 @@ fun DashboardPaciente() {
                         titulo = "Mis Médicos"
                     ) {
                         info!!.medicos.forEach { medico ->
-                            Column(modifier = Modifier.padding(vertical = 6.dp)) {
-                                Text(medico.nombre, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-                                Text(medico.especialidad, color = PrimaryBlue, fontSize = 12.sp)
-                                Text("Atiende: ${medico.padecimientos.joinToString(", ")}", color = TextSecondary, fontSize = 12.sp)
+                            Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                                Text(medico.nombre, fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 15.sp)
+                                Text(medico.especialidad, color = PrimaryBlue, fontSize = 13.sp)
+                                Text("Atiende: ${medico.padecimientos.joinToString(", ")}", color = TextSecondary, fontSize = 13.sp)
                             }
                             if (medico != info!!.medicos.last()) {
                                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
@@ -183,7 +225,7 @@ fun DashboardPaciente() {
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     TarjetaInfo(
                         icono = Icons.Default.Medication,
@@ -191,51 +233,59 @@ fun DashboardPaciente() {
                         titulo = "Medicamentos recetados"
                     ) {
                         info!!.medicamentos.forEach { med ->
-                            Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Medication, contentDescription = null, tint = Success, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(med.nombre, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                            Row(modifier = Modifier.padding(vertical = 8.dp), verticalAlignment = Alignment.Top) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(Success.copy(alpha = 0.15f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(Icons.Default.Medication, contentDescription = null, tint = Success, modifier = Modifier.size(18.dp))
                                 }
-                                Text(med.dosis, color = TextSecondary, fontSize = 13.sp, modifier = Modifier.padding(start = 22.dp))
-                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 22.dp)) {
-                                    Icon(Icons.Default.Schedule, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(13.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(med.horario, color = PurpleAccent, fontSize = 12.sp)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(med.nombre, fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 15.sp)
+                                    Text(med.dosis, color = TextSecondary, fontSize = 13.sp)
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Schedule, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(14.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(med.horario, color = PurpleAccent, fontSize = 13.sp)
+                                    }
                                 }
                             }
                         }
                     }
 
-                    if (citas.isNotEmpty()) {
+                    if (citasProximas.isNotEmpty()) {
 
-                        Spacer(modifier = Modifier.height(14.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         TarjetaInfo(
                             icono = Icons.Default.CalendarToday,
                             colorIcono = PurpleAccent,
                             titulo = "Próximas citas"
                         ) {
-                            citas.forEach { cita ->
+                            citasProximas.forEach { cita ->
                                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(Icons.Default.Event, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.Event, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(18.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
-                                        Text("${cita.fecha} · ${cita.hora}", fontWeight = FontWeight.SemiBold, color = TextPrimary, modifier = Modifier.weight(1f))
+                                        Text("${cita.fecha} · ${cita.hora}", fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 15.sp, modifier = Modifier.weight(1f))
                                         EtiquetaEstado(estado = cita.estado)
                                     }
-                                    Text("Con ${cita.medico} · ${cita.especialidad}", color = TextSecondary, fontSize = 13.sp, modifier = Modifier.padding(start = 22.dp))
-                                    Text(cita.motivo, color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(start = 22.dp))
+                                    Text("Con ${cita.medico} · ${cita.especialidad}", color = TextSecondary, fontSize = 13.sp, modifier = Modifier.padding(start = 24.dp))
+                                    Text(cita.motivo, color = TextSecondary, fontSize = 13.sp, modifier = Modifier.padding(start = 24.dp))
 
                                     if (cita.estado == "Pendiente" || cita.estado == "Confirmada") {
                                         Spacer(modifier = Modifier.height(6.dp))
                                         Text(
                                             text = "Cancelar cita",
                                             color = Error,
-                                            fontSize = 12.sp,
+                                            fontSize = 13.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             modifier = Modifier
-                                                .padding(start = 22.dp)
+                                                .padding(start = 24.dp)
                                                 .clickable {
                                                     citaACancelar = cita
                                                     motivoCancelacion = ""
@@ -243,7 +293,7 @@ fun DashboardPaciente() {
                                         )
                                     }
                                 }
-                                if (cita != citas.last()) {
+                                if (cita != citasProximas.last()) {
                                     HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
                                 }
                             }
@@ -253,44 +303,44 @@ fun DashboardPaciente() {
 
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
                     colors = CardDefaults.cardColors(containerColor = White)
                 ) {
-                    Column(modifier = Modifier.padding(18.dp)) {
+                    Column(modifier = Modifier.padding(20.dp)) {
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier = Modifier
-                                    .size(30.dp)
-                                    .clip(RoundedCornerShape(9.dp))
+                                    .size(38.dp)
+                                    .clip(RoundedCornerShape(11.dp))
                                     .background(SecondaryCyan.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.Biotech, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Default.Biotech, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(20.dp))
                             }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text("Mis Estudios", color = SecondaryCyan, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Mis Estudios", color = SecondaryCyan, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
                         if (estudios.isEmpty() && fotosPendientes.isEmpty()) {
-                            Text("Todavía no has subido ningún estudio.", color = TextSecondary, fontSize = 13.sp)
+                            Text("Todavía no has subido ningún estudio.", color = TextSecondary, fontSize = 14.sp)
                         } else {
                             estudios.forEach { estudio ->
                                 Column(modifier = Modifier.padding(vertical = 6.dp)) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(Icons.Default.Description, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.Description, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(18.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
-                                        Text(estudio.descripcion.ifBlank { "Estudio" }, color = TextPrimary, fontSize = 13.sp)
+                                        Text(estudio.descripcion.ifBlank { "Estudio" }, color = TextPrimary, fontSize = 14.sp)
                                         if (estudio.fecha.isNotBlank()) {
                                             Spacer(modifier = Modifier.width(6.dp))
-                                            Text("· ${estudio.fecha}", color = TextSecondary, fontSize = 12.sp)
+                                            Text("· ${estudio.fecha}", color = TextSecondary, fontSize = 13.sp)
                                         }
                                     }
                                     Spacer(modifier = Modifier.height(8.dp))
@@ -299,8 +349,8 @@ fun DashboardPaciente() {
                                         contentDescription = "Estudio médico",
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(180.dp)
-                                            .clip(RoundedCornerShape(12.dp))
+                                            .height(190.dp)
+                                            .clip(RoundedCornerShape(14.dp))
                                             .clickable { imagenSeleccionada = estudio.url },
                                         contentScale = ContentScale.Crop
                                     )
@@ -308,16 +358,16 @@ fun DashboardPaciente() {
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(14.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
 
                             repeat(3) { index ->
 
                                 Box(
                                     modifier = Modifier
-                                        .size(70.dp)
-                                        .clip(RoundedCornerShape(14.dp))
+                                        .size(78.dp)
+                                        .clip(RoundedCornerShape(16.dp))
                                         .background(
                                             if (index < fotosPendientes.size) Success.copy(alpha = 0.15f)
                                             else Background
@@ -325,23 +375,23 @@ fun DashboardPaciente() {
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (index < fotosPendientes.size) {
-                                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Success, modifier = Modifier.size(28.dp))
+                                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Success, modifier = Modifier.size(32.dp))
                                     } else if (index == fotosPendientes.size) {
 
                                         IconButton(onClick = { tomarFoto() }) {
                                             Box(
                                                 modifier = Modifier
-                                                    .size(46.dp)
+                                                    .size(52.dp)
                                                     .clip(CircleShape)
                                                     .background(PurpleAccent),
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                Icon(Icons.Default.CameraAlt, contentDescription = "Tomar foto", tint = White, modifier = Modifier.size(22.dp))
+                                                Icon(Icons.Default.CameraAlt, contentDescription = "Tomar foto", tint = White, modifier = Modifier.size(26.dp))
                                             }
                                         }
 
                                     } else {
-                                        Icon(Icons.Default.PhotoCamera, contentDescription = null, tint = TextSecondary.copy(alpha = 0.3f), modifier = Modifier.size(22.dp))
+                                        Icon(Icons.Default.PhotoCamera, contentDescription = null, tint = TextSecondary.copy(alpha = 0.3f), modifier = Modifier.size(26.dp))
                                     }
                                 }
 
@@ -349,13 +399,13 @@ fun DashboardPaciente() {
 
                         }
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                        Text("${fotosPendientes.size} / 3 fotos", color = TextSecondary, fontSize = 12.sp)
+                        Text("${fotosPendientes.size} / 3 fotos", color = TextSecondary, fontSize = 13.sp)
 
                         if (fotosPendientes.isNotEmpty()) {
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(14.dp))
 
                             PrimaryButton(
                                 text = if (subiendo) "Subiendo..." else "Subir estudio",
@@ -367,7 +417,7 @@ fun DashboardPaciente() {
 
                                         subiendo = true
 
-                                        val fechaHoy = ""
+                                        val fechaEstudio = ""
 
                                         var exitoTotal = true
 
@@ -378,7 +428,7 @@ fun DashboardPaciente() {
                                                     correoPaciente = UserSession.correo,
                                                     imagenBase64 = base64,
                                                     descripcion = "Estudio médico",
-                                                    fecha = fechaHoy
+                                                    fecha = fechaEstudio
                                                 )
                                             )
                                             if (!ok) exitoTotal = false
@@ -401,8 +451,8 @@ fun DashboardPaciente() {
                         }
 
                         if (mensajeEstudio.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(mensajeEstudio, color = if (mensajeEstudio.contains("correctamente")) Success else Error, fontSize = 13.sp)
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(mensajeEstudio, color = if (mensajeEstudio.contains("correctamente")) Success else Error, fontSize = 14.sp)
                         }
 
                     }
@@ -448,7 +498,6 @@ fun DashboardPaciente() {
         }
     }
 
-    // Diálogo para cancelar cita con motivo
     if (citaACancelar != null) {
         AlertDialog(
             onDismissRequest = { citaACancelar = null },
@@ -515,9 +564,9 @@ private fun EtiquetaEstado(estado: String) {
         modifier = Modifier
             .clip(RoundedCornerShape(10.dp))
             .background(color.copy(alpha = 0.15f))
-            .padding(horizontal = 8.dp, vertical = 3.dp)
+            .padding(horizontal = 9.dp, vertical = 4.dp)
     ) {
-        Text(estado, color = color, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+        Text(estado, color = color, fontSize = 11.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -531,15 +580,23 @@ private fun MiniDato(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
-            Icon(icono, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(titulo, fontSize = 11.sp, color = TextSecondary)
-            Text(valor, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(color.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(icono, contentDescription = null, tint = color, modifier = Modifier.size(22.dp))
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(titulo, fontSize = 12.sp, color = TextSecondary)
+            Text(valor, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
         }
     }
 }
@@ -553,27 +610,27 @@ private fun TarjetaInfo(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(18.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
-        Column(modifier = Modifier.padding(18.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
-                        .size(30.dp)
-                        .clip(RoundedCornerShape(9.dp))
+                        .size(38.dp)
+                        .clip(RoundedCornerShape(11.dp))
                         .background(colorIcono.copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(icono, contentDescription = null, tint = colorIcono, modifier = Modifier.size(16.dp))
+                    Icon(icono, contentDescription = null, tint = colorIcono, modifier = Modifier.size(20.dp))
                 }
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(titulo, color = colorIcono, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(titulo, color = colorIcono, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             contenido()
 

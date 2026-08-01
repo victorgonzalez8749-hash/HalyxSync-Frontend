@@ -65,10 +65,35 @@ fun PantallaCitasHoy() {
                                 Text(cita.hora, color = White, fontWeight = FontWeight.Bold, fontSize = 11.sp)
                             }
                             Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(cita.pacienteNombre, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(cita.pacienteNombre, fontWeight = FontWeight.SemiBold, color = TextPrimary, modifier = Modifier.weight(1f))
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .background(
+                                                when (cita.estado) {
+                                                    "Cancelada" -> Error.copy(alpha = 0.15f)
+                                                    "Confirmada" -> Success.copy(alpha = 0.15f)
+                                                    else -> PurpleAccent.copy(alpha = 0.15f)
+                                                }
+                                            )
+                                            .padding(horizontal = 8.dp, vertical = 3.dp)
+                                    ) {
+                                        Text(
+                                            cita.estado,
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = when (cita.estado) {
+                                                "Cancelada" -> Error
+                                                "Confirmada" -> Success
+                                                else -> PurpleAccent
+                                            }
+                                        )
+                                    }
+                                }
                                 Text("${cita.edad} años", color = TextSecondary, fontSize = 12.sp)
-                                Text(cita.motivo, color = PurpleAccent, fontSize = 12.sp)
+                                Text(cita.motivo, color = if (cita.estado == "Cancelada") Error else PurpleAccent, fontSize = 12.sp)
                             }
                         }
                     }

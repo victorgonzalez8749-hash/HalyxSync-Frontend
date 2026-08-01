@@ -67,7 +67,6 @@ class DoctorApi {
 
     }
 
-    // NUEVO: agenda de citas de hoy con detalle
     suspend fun obtenerCitasHoy(correoDoctor: String, fechaHoy: String): List<CitaAgendaInfo> {
 
         return try {
@@ -97,5 +96,6 @@ data class CitaAgendaInfo(
     val pacienteNombre: String,
     val edad: Int,
     val hora: String,
-    val motivo: String
+    val motivo: String,
+    val estado: String
 )
