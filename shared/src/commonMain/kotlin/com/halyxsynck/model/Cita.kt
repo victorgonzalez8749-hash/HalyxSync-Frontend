@@ -24,3 +24,9 @@ data class AgendarCitaRequest(
     val hora: String,
     val motivo: String
 )
+
+@Serializable
+data class CancelarCitaRequest(
+    val citaId: Int,
+    val motivoCancelacion: String
+)

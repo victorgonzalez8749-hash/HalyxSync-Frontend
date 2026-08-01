@@ -1,6 +1,7 @@
 package com.halyxsynck.api
 
 import com.halyxsynck.model.AgendarCitaRequest
+import com.halyxsynck.model.CancelarCitaRequest
 import com.halyxsynck.model.CitaInfo
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -49,6 +50,25 @@ class CitaApi {
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
+        }
+
+    }
+
+    // NUEVO: cancelar cita con motivo
+    suspend fun cancelarCita(request: CancelarCitaRequest): Boolean {
+
+        return try {
+
+            val respuesta = client.post("$baseUrl/citas/cancelar") {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+
+            respuesta.status.value == 200
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
 
     }
