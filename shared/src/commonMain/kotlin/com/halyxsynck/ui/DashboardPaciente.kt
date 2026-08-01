@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import com.halyxsynck.components.PrimaryButton
+import com.halyxsynck.model.CancelarCitaRequest
 import com.halyxsynck.model.CitaInfo
 import com.halyxsynck.model.EstudioInfo
 import com.halyxsynck.model.PacienteInfo
@@ -58,10 +59,18 @@ fun DashboardPaciente() {
     var mensajeEstudio by remember { mutableStateOf("") }
     var imagenSeleccionada by remember { mutableStateOf<String?>(null) }
 
+    var citaACancelar by remember { mutableStateOf<CitaInfo?>(null) }
+    var motivoCancelacion by remember { mutableStateOf("") }
+    var cancelando by remember { mutableStateOf(false) }
+
     val tomarFoto = rememberCapturadorFoto { bytes ->
         if (fotosPendientes.size < 3) {
             fotosPendientes = fotosPendientes + bytes
         }
+    }
+
+    suspend fun recargarCitas() {
+        citas = citaRepository.obtenerCitasPaciente(UserSession.correo)
     }
 
     LaunchedEffect(Unit) {
@@ -212,10 +221,30 @@ fun DashboardPaciente() {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(Icons.Default.Event, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
-                                        Text("${cita.fecha} · ${cita.hora}", fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                                        Text("${cita.fecha} · ${cita.hora}", fontWeight = FontWeight.SemiBold, color = TextPrimary, modifier = Modifier.weight(1f))
+                                        EtiquetaEstado(estado = cita.estado)
                                     }
                                     Text("Con ${cita.medico} · ${cita.especialidad}", color = TextSecondary, fontSize = 13.sp, modifier = Modifier.padding(start = 22.dp))
                                     Text(cita.motivo, color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(start = 22.dp))
+
+                                    if (cita.estado == "Pendiente" || cita.estado == "Confirmada") {
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Text(
+                                            text = "Cancelar cita",
+                                            color = Error,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            modifier = Modifier
+                                                .padding(start = 22.dp)
+                                                .clickable {
+                                                    citaACancelar = cita
+                                                    motivoCancelacion = ""
+                                                }
+                                        )
+                                    }
+                                }
+                                if (cita != citas.last()) {
+                                    HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
                                 }
                             }
                         }
@@ -419,6 +448,77 @@ fun DashboardPaciente() {
         }
     }
 
+    // Diálogo para cancelar cita con motivo
+    if (citaACancelar != null) {
+        AlertDialog(
+            onDismissRequest = { citaACancelar = null },
+            title = { Text("Cancelar cita") },
+            text = {
+                Column {
+                    Text(
+                        "¿Por qué deseas cancelar tu cita del ${citaACancelar!!.fecha} a las ${citaACancelar!!.hora}?",
+                        color = TextSecondary,
+                        fontSize = 13.sp
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    OutlinedTextField(
+                        value = motivoCancelacion,
+                        onValueChange = { motivoCancelacion = it },
+                        label = { Text("Motivo de la cancelación") },
+                        placeholder = { Text("Ej. Ya no puedo asistir") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        if (motivoCancelacion.isNotBlank()) {
+                            scope.launch {
+                                cancelando = true
+                                val ok = citaRepository.cancelarCita(
+                                    CancelarCitaRequest(
+                                        citaId = citaACancelar!!.id,
+                                        motivoCancelacion = motivoCancelacion
+                                    )
+                                )
+                                if (ok) {
+                                    recargarCitas()
+                                }
+                                citaACancelar = null
+                                cancelando = false
+                            }
+                        }
+                    }
+                ) {
+                    Text("Confirmar cancelación", color = Error, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { citaACancelar = null }) {
+                    Text("Cerrar", color = TextSecondary)
+                }
+            }
+        )
+    }
+
+}
+
+@Composable
+private fun EtiquetaEstado(estado: String) {
+    val color = when (estado) {
+        "Cancelada" -> Error
+        "Confirmada" -> Success
+        else -> PurpleAccent
+    }
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(color.copy(alpha = 0.15f))
+            .padding(horizontal = 8.dp, vertical = 3.dp)
+    ) {
+        Text(estado, color = color, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+    }
 }
 
 @Composable

@@ -2,6 +2,7 @@ package com.halyxsynck.repository
 
 import com.halyxsynck.api.CitaApi
 import com.halyxsynck.model.AgendarCitaRequest
+import com.halyxsynck.model.CancelarCitaRequest
 import com.halyxsynck.model.CitaInfo
 
 class CitaRepository {
@@ -18,6 +19,11 @@ class CitaRepository {
 
     suspend fun obtenerCitasDoctor(correo: String): List<CitaInfo> {
         return api.obtenerCitasDoctor(correo)
+    }
+
+    // NUEVO
+    suspend fun cancelarCita(request: CancelarCitaRequest): Boolean {
+        return api.cancelarCita(request)
     }
 
 }
