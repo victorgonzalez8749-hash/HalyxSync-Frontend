@@ -30,7 +30,6 @@ import com.halyxsynck.session.UserSession
 import com.halyxsynck.theme.*
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun DashboardDoctor() {
 
@@ -41,7 +40,7 @@ fun DashboardDoctor() {
     var totalPacientes by remember { mutableStateOf<Int?>(null) }
     var citasHoyCount by remember { mutableStateOf<Int?>(null) }
 
-    val saludo = "Bienvenido"
+    val saludo = remember { FechaHoy.obtenerSaludo() }
 
     LaunchedEffect(Unit) {
         totalPacientes = repository.obtenerPacientes(UserSession.correo).size
@@ -105,9 +104,20 @@ fun DashboardDoctor() {
                     }
                 )
                 ItemMenuLateral(
+                    icono = Icons.Default.Medication,
+                    texto = "Recetas",
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        Navigator.navigate(Screen.Recetas)
+                    }
+                )
+                ItemMenuLateral(
                     icono = Icons.Default.MailOutline,
                     texto = "Mensajes",
-                    onClick = { scope.launch { drawerState.close() } }
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        Navigator.navigate(Screen.Mensajes)
+                    }
                 )
                 ItemMenuLateral(
                     icono = Icons.Default.Person,
@@ -177,7 +187,6 @@ fun DashboardDoctor() {
                     .padding(padding)
             ) {
 
-                // Cabecera con gradiente y avatar grande
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -241,7 +250,6 @@ fun DashboardDoctor() {
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    // Tarjeta destacada de "Mis Pacientes" (más grande, primera)
                     Card(
                         modifier = Modifier.fillMaxWidth().clickable { Navigator.navigate(Screen.MisPacientes) },
                         shape = RoundedCornerShape(18.dp),
@@ -285,7 +293,7 @@ fun DashboardDoctor() {
                             icono = Icons.Default.Medication,
                             colorFondo = Success,
                             texto = "Recetas",
-                            onClick = { }
+                            onClick = { Navigator.navigate(Screen.Recetas) }
                         )
                     }
 
@@ -294,17 +302,17 @@ fun DashboardDoctor() {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         AccesoRapido(
                             modifier = Modifier.weight(1f),
-                            icono = Icons.Default.LocalHospital,
+                            icono = Icons.Default.MailOutline,
                             colorFondo = SecondaryCyan,
-                            texto = "Mi Perfil",
-                            onClick = { Navigator.navigate(Screen.PerfilDoctor) }
+                            texto = "Mensajes",
+                            onClick = { Navigator.navigate(Screen.Mensajes) }
                         )
                         AccesoRapido(
                             modifier = Modifier.weight(1f),
-                            icono = Icons.Default.CalendarToday,
+                            icono = Icons.Default.LocalHospital,
                             colorFondo = PurpleAccent,
-                            texto = "Citas Hoy",
-                            onClick = { Navigator.navigate(Screen.CitasHoy) }
+                            texto = "Mi Perfil",
+                            onClick = { Navigator.navigate(Screen.PerfilDoctor) }
                         )
                     }
 

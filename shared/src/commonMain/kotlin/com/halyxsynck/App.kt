@@ -17,6 +17,8 @@ import com.halyxsynck.ui.PantallaDetallePaciente
 import com.halyxsynck.ui.PantallaPerfilDoctor
 import com.halyxsynck.ui.PantallaConsultas
 import com.halyxsynck.ui.PantallaCitasHoy
+import com.halyxsynck.ui.PantallaMensajes
+import com.halyxsynck.ui.PantallaRecetas
 
 @Composable
 @Preview
@@ -55,6 +57,11 @@ fun App() {
 
             // NUEVO
             Screen.CitasHoy -> PantallaCitasHoy()
+
+            Screen.Mensajes -> PantallaMensajes()
+
+            Screen.Recetas -> PantallaRecetas()
+
 
             is Screen.DetallePaciente -> PantallaDetallePaciente(correo = pantalla.correo)
 
