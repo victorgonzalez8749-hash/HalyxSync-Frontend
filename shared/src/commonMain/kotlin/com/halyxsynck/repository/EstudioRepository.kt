@@ -16,4 +16,9 @@ class EstudioRepository {
         return api.obtenerEstudios(correo)
     }
 
+    // NUEVO
+    suspend fun obtenerEstudiosParaDoctor(correoPaciente: String, correoDoctor: String): List<EstudioInfo> {
+        return api.obtenerEstudiosParaDoctor(correoPaciente, correoDoctor)
+    }
+
 }

@@ -2,6 +2,7 @@ package com.halyxsynck.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -14,6 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -366,7 +369,7 @@ private fun TarjetaEstudiosPaciente(correo: String) {
     var imagenSeleccionada by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(correo) {
-        estudios = estudioRepository.obtenerEstudios(correo)
+        estudios = estudioRepository.obtenerEstudiosParaDoctor(correo, UserSession.correo)
         cargando = false
     }
 
@@ -411,6 +414,8 @@ private fun TarjetaEstudiosPaciente(correo: String) {
                             contentScale = ContentScale.Crop
                         )
 
+                        Text("Toca la imagen para ampliar y hacer zoom", color = TextSecondary, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
+
                     }
                 }
             }
@@ -419,11 +424,25 @@ private fun TarjetaEstudiosPaciente(correo: String) {
     }
 
     if (imagenSeleccionada != null) {
+
+        var escala by remember { mutableStateOf(1f) }
+        var offsetX by remember { mutableStateOf(0f) }
+        var offsetY by remember { mutableStateOf(0f) }
+
         Dialog(onDismissRequest = { imagenSeleccionada = null }) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { imagenSeleccionada = null },
+                    .height(500.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(androidx.compose.ui.graphics.Color.Black)
+                    .pointerInput(Unit) {
+                        detectTransformGestures { _, pan, zoom, _ ->
+                            escala = (escala * zoom).coerceIn(1f, 4f)
+                            offsetX += pan.x
+                            offsetY += pan.y
+                        }
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -431,7 +450,12 @@ private fun TarjetaEstudiosPaciente(correo: String) {
                     contentDescription = "Estudio en pantalla completa",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp)),
+                        .graphicsLayer(
+                            scaleX = escala,
+                            scaleY = escala,
+                            translationX = offsetX,
+                            translationY = offsetY
+                        ),
                     contentScale = ContentScale.Fit
                 )
             }

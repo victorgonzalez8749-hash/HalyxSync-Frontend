@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-@OptIn(ExperimentalEncodingApi::class)
+@OptIn(ExperimentalEncodingApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardPaciente() {
 
@@ -59,6 +59,9 @@ fun DashboardPaciente() {
     var subiendo by remember { mutableStateOf(false) }
     var mensajeEstudio by remember { mutableStateOf("") }
     var imagenSeleccionada by remember { mutableStateOf<String?>(null) }
+
+    var doctorSeleccionado by remember { mutableStateOf("") }
+    var expandidoDoctor by remember { mutableStateOf(false) }
 
     var citaACancelar by remember { mutableStateOf<CitaInfo?>(null) }
     var motivoCancelacion by remember { mutableStateOf("") }
@@ -83,6 +86,9 @@ fun DashboardPaciente() {
         citas = citaRepository.obtenerCitasPaciente(UserSession.correo)
         estudios = estudioRepository.obtenerEstudios(UserSession.correo)
         cargando = false
+        if (info?.medicos?.size == 1) {
+            doctorSeleccionado = info!!.medicos.first().nombre
+        }
     }
 
     Column(
@@ -145,7 +151,6 @@ fun DashboardPaciente() {
 
             } else {
 
-                // Acceso rápido a Mensajes
                 Card(
                     modifier = Modifier.fillMaxWidth().clickable { Navigator.navigate(Screen.Mensajes) },
                     shape = RoundedCornerShape(18.dp),
@@ -337,9 +342,13 @@ fun DashboardPaciente() {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(Icons.Default.Description, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(18.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
-                                        Text(estudio.descripcion.ifBlank { "Estudio" }, color = TextPrimary, fontSize = 14.sp)
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(estudio.descripcion.ifBlank { "Estudio" }, color = TextPrimary, fontSize = 14.sp)
+                                            if (estudio.doctorNombre.isNotBlank()) {
+                                                Text("Enviado a Dr. ${estudio.doctorNombre}", color = TextSecondary, fontSize = 12.sp)
+                                            }
+                                        }
                                         if (estudio.fecha.isNotBlank()) {
-                                            Spacer(modifier = Modifier.width(6.dp))
                                             Text("· ${estudio.fecha}", color = TextSecondary, fontSize = 13.sp)
                                         }
                                     }
@@ -359,6 +368,50 @@ fun DashboardPaciente() {
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text("Subir nuevo estudio", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        if (info != null && info!!.medicos.isNotEmpty()) {
+
+                            ExposedDropdownMenuBox(
+                                expanded = expandidoDoctor,
+                                onExpandedChange = { expandidoDoctor = it }
+                            ) {
+                                OutlinedTextField(
+                                    value = doctorSeleccionado,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text("¿A qué doctor se lo mandas?") },
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandidoDoctor) },
+                                    modifier = Modifier.fillMaxWidth().menuAnchor(),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = PrimaryBlue,
+                                        unfocusedBorderColor = TextSecondary
+                                    )
+                                )
+                                ExposedDropdownMenu(
+                                    expanded = expandidoDoctor,
+                                    onDismissRequest = { expandidoDoctor = false }
+                                ) {
+                                    info!!.medicos.forEach { medico ->
+                                        DropdownMenuItem(
+                                            text = { Text("${medico.nombre} · ${medico.especialidad}") },
+                                            onClick = {
+                                                doctorSeleccionado = medico.nombre
+                                                expandidoDoctor = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(14.dp))
+
+                        }
 
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
 
@@ -383,7 +436,7 @@ fun DashboardPaciente() {
                                                 modifier = Modifier
                                                     .size(52.dp)
                                                     .clip(CircleShape)
-                                                    .background(PurpleAccent),
+                                                    .background(if (doctorSeleccionado.isNotBlank()) PurpleAccent else TextSecondary.copy(alpha = 0.4f)),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Icon(Icons.Default.CameraAlt, contentDescription = "Tomar foto", tint = White, modifier = Modifier.size(26.dp))
@@ -401,7 +454,12 @@ fun DashboardPaciente() {
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        Text("${fotosPendientes.size} / 3 fotos", color = TextSecondary, fontSize = 13.sp)
+                        Text("${fotosPendientes.size} / 3 fotos nuevas", color = TextSecondary, fontSize = 13.sp)
+
+                        if (doctorSeleccionado.isBlank() && fotosPendientes.isEmpty()) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text("Selecciona un doctor antes de tomar la foto", color = TextSecondary, fontSize = 12.sp)
+                        }
 
                         if (fotosPendientes.isNotEmpty()) {
 
@@ -411,7 +469,7 @@ fun DashboardPaciente() {
                                 text = if (subiendo) "Subiendo..." else "Subir estudio",
                                 onClick = {
 
-                                    if (subiendo) return@PrimaryButton
+                                    if (subiendo || doctorSeleccionado.isBlank()) return@PrimaryButton
 
                                     scope.launch {
 
@@ -426,6 +484,7 @@ fun DashboardPaciente() {
                                             val ok = estudioRepository.subirEstudio(
                                                 SubirEstudioRequest(
                                                     correoPaciente = UserSession.correo,
+                                                    correoDoctor = info!!.medicos.first { it.nombre == doctorSeleccionado }.let { UserSession.correo },
                                                     imagenBase64 = base64,
                                                     descripcion = "Estudio médico",
                                                     fecha = fechaEstudio

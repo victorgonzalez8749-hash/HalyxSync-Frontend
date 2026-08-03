@@ -42,4 +42,16 @@ class EstudioApi {
 
     }
 
+    // NUEVO: solo los estudios que le mandaron a ese doctor
+    suspend fun obtenerEstudiosParaDoctor(correoPaciente: String, correoDoctor: String): List<EstudioInfo> {
+
+        return try {
+            client.get("$baseUrl/estudios/doctor?correoPaciente=$correoPaciente&correoDoctor=$correoDoctor").body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+
+    }
+
 }
