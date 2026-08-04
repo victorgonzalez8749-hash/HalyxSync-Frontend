@@ -14,6 +14,7 @@ data class MedicamentoInfo(
 @Serializable
 data class MedicoAsignadoInfo(
     val nombre: String,
+    val correo: String,
     val especialidad: String,
     val padecimientos: List<String>
 )
