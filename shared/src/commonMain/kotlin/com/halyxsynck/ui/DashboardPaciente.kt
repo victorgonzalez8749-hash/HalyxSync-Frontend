@@ -484,7 +484,7 @@ fun DashboardPaciente() {
                                             val ok = estudioRepository.subirEstudio(
                                                 SubirEstudioRequest(
                                                     correoPaciente = UserSession.correo,
-                                                    correoDoctor = info!!.medicos.first { it.nombre == doctorSeleccionado }.let { UserSession.correo },
+                                                    correoDoctor = info!!.medicos.first { it.nombre == doctorSeleccionado }.correo,
                                                     imagenBase64 = base64,
                                                     descripcion = "Estudio médico",
                                                     fecha = fechaEstudio
