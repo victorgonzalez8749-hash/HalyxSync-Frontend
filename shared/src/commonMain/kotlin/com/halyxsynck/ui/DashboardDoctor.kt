@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.border
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,14 +30,9 @@ import com.halyxsynck.session.UserSession
 import com.halyxsynck.theme.*
 import kotlinx.coroutines.launch
 
-// Colores realistas para iconos médicos
 private val RojoCorazon = Color(0xFFE53935)
-private val RojoSangre = Color(0xFF8E1B1B)
 private val AzulJeringa = Color(0xFF1976D2)
 private val VerdeEscudo = Color(0xFF2E8B57)
-private val MoradoMente = Color(0xFF7E57C2)
-private val RosaPediatria = Color(0xFFEC407A)
-private val NegroContorno = Color(0xFF1A1A1A)
 
 @Composable
 fun DashboardDoctor() {
@@ -69,7 +63,25 @@ fun DashboardDoctor() {
                         .padding(vertical = 32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    DoctorAvatar(size = 92.dp)
+
+                    Box(contentAlignment = Alignment.BottomEnd) {
+                        DoctorAvatar(size = 92.dp)
+                        Box(
+                            modifier = Modifier
+                                .size(18.dp)
+                                .clip(CircleShape)
+                                .background(White)
+                                .padding(2.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                                    .background(Success)
+                            )
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(12.dp))
                     Text("Dr. ${UserSession.nombre}", color = White, fontSize = 19.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(2.dp))
@@ -203,14 +215,41 @@ fun DashboardDoctor() {
                     .padding(padding)
             ) {
 
-                Column(
+                // Cabecera con esquina inferior curva + marcas de agua decorativas
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
                         .background(Brush.linearGradient(listOf(PrimaryBlue, PurpleAccent, GradientEnd)))
-                        .padding(horizontal = 20.dp, vertical = 26.dp)
                 ) {
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Marca de agua 1: corazón grande, esquina superior derecha (se recorta con la forma)
+                    Icon(
+                        Icons.Default.Favorite,
+                        contentDescription = null,
+                        tint = White.copy(alpha = 0.10f),
+                        modifier = Modifier
+                            .size(130.dp)
+                            .align(Alignment.TopEnd)
+                            .offset(x = 30.dp, y = (-30).dp)
+                    )
+
+                    // Marca de agua 2: cruz de hospital, esquina inferior izquierda
+                    Icon(
+                        Icons.Default.LocalHospital,
+                        contentDescription = null,
+                        tint = White.copy(alpha = 0.10f),
+                        modifier = Modifier
+                            .size(90.dp)
+                            .align(Alignment.BottomStart)
+                            .offset(x = (-20).dp, y = 20.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp, vertical = 26.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
                         Box(
                             modifier = Modifier
@@ -248,6 +287,7 @@ fun DashboardDoctor() {
                             modifier = Modifier.weight(1f),
                             icono = Icons.Default.People,
                             colorIcono = PurpleAccent,
+                            watermark = Icons.Default.Groups,
                             titulo = "Pacientes",
                             valor = totalPacientes?.toString() ?: "—"
                         )
@@ -255,26 +295,10 @@ fun DashboardDoctor() {
                             modifier = Modifier.weight(1f).clickable { Navigator.navigate(Screen.CitasHoy) },
                             icono = Icons.Default.MonitorHeart,
                             colorIcono = RojoCorazon,
+                            watermark = Icons.Default.CalendarToday,
                             titulo = "Citas hoy",
                             valor = citasHoyCount?.toString() ?: "—"
                         )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Franja decorativa: Áreas de la salud
-                    Text("Áreas de la salud", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        IconoArea(icono = Icons.Default.Favorite, color = RojoCorazon, etiqueta = "Cardio")
-                        IconoArea(icono = Icons.Default.Visibility, color = NegroContorno, fondo = White, borde = true, etiqueta = "Vista")
-                        IconoArea(icono = Icons.Default.Psychology, color = MoradoMente, etiqueta = "Neuro")
-                        IconoArea(icono = Icons.Default.Vaccines, color = AzulJeringa, etiqueta = "Vacunas")
-                        IconoArea(icono = Icons.Default.Bloodtype, color = RojoSangre, etiqueta = "Sangre")
-                        IconoArea(icono = Icons.Default.ChildCare, color = RosaPediatria, etiqueta = "Pediatría")
                     }
 
                     Spacer(modifier = Modifier.height(28.dp))
@@ -286,28 +310,41 @@ fun DashboardDoctor() {
                     Card(
                         modifier = Modifier.fillMaxWidth().clickable { Navigator.navigate(Screen.MisPacientes) },
                         shape = RoundedCornerShape(18.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                         colors = CardDefaults.cardColors(containerColor = White)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(18.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
+                        Box {
+
+                            Icon(
+                                Icons.Default.HealthAndSafety,
+                                contentDescription = null,
+                                tint = PurpleAccent.copy(alpha = 0.08f),
                                 modifier = Modifier
-                                    .size(60.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .background(Brush.linearGradient(listOf(GradientStart, GradientEnd))),
-                                contentAlignment = Alignment.Center
+                                    .size(100.dp)
+                                    .align(Alignment.CenterEnd)
+                                    .offset(x = 20.dp)
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(18.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.People, contentDescription = null, tint = White, modifier = Modifier.size(30.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(Brush.linearGradient(listOf(GradientStart, GradientEnd))),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(Icons.Default.People, contentDescription = null, tint = White, modifier = Modifier.size(30.dp))
+                                }
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text("Mis Pacientes", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                                    Text("Ver y gestionar expedientes", fontSize = 13.sp, color = TextSecondary)
+                                }
+                                Icon(Icons.Default.ChevronRight, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(26.dp))
                             }
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Mis Pacientes", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-                                Text("Ver y gestionar expedientes", fontSize = 13.sp, color = TextSecondary)
-                            }
-                            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(26.dp))
                         }
                     }
 
@@ -360,32 +397,6 @@ fun DashboardDoctor() {
 }
 
 @Composable
-private fun IconoArea(
-    icono: ImageVector,
-    color: Color,
-    etiqueta: String,
-    fondo: Color = color.copy(alpha = 0.14f),
-    borde: Boolean = false
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(fondo)
-                .then(
-                    if (borde) Modifier.border(1.5.dp, NegroContorno, CircleShape) else Modifier
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(icono, contentDescription = etiqueta, tint = color, modifier = Modifier.size(22.dp))
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(etiqueta, fontSize = 10.sp, color = TextSecondary)
-    }
-}
-
-@Composable
 private fun ItemMenuLateral(
     icono: ImageVector,
     color: Color = PurpleAccent,
@@ -418,28 +429,42 @@ private fun TarjetaStat(
     modifier: Modifier = Modifier,
     icono: ImageVector,
     colorIcono: Color,
+    watermark: ImageVector,
     titulo: String,
     valor: String
 ) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Box(
+        Box {
+
+            Icon(
+                watermark,
+                contentDescription = null,
+                tint = colorIcono.copy(alpha = 0.07f),
                 modifier = Modifier
-                    .size(50.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(colorIcono.copy(alpha = 0.15f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(icono, contentDescription = null, tint = colorIcono, modifier = Modifier.size(26.dp))
+                    .size(70.dp)
+                    .align(Alignment.BottomEnd)
+                    .offset(x = 12.dp, y = 12.dp)
+            )
+
+            Column(modifier = Modifier.padding(16.dp)) {
+                Box(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(colorIcono.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(icono, contentDescription = null, tint = colorIcono, modifier = Modifier.size(26.dp))
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(titulo, fontSize = 14.sp, color = TextSecondary)
+                Text(valor, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             }
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(titulo, fontSize = 14.sp, color = TextSecondary)
-            Text(valor, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
         }
     }
 }
@@ -455,7 +480,7 @@ private fun AccesoRapido(
     Card(
         modifier = modifier.clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
         Column(
