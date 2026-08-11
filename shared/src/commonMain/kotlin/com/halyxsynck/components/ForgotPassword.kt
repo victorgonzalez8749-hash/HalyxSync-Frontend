@@ -1,5 +1,6 @@
 package com.halyxsynck.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,7 +18,9 @@ fun ForgotPassword(
 
     Text(
         text = "¿Olvidó su contraseña?",
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         textAlign = TextAlign.End,
         color = PrimaryBlue,
         fontSize = 14.sp,

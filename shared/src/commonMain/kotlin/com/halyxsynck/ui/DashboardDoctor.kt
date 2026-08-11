@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.border
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,6 +30,15 @@ import com.halyxsynck.repository.DoctorRepository
 import com.halyxsynck.session.UserSession
 import com.halyxsynck.theme.*
 import kotlinx.coroutines.launch
+
+// Colores realistas para iconos médicos
+private val RojoCorazon = Color(0xFFE53935)
+private val RojoSangre = Color(0xFF8E1B1B)
+private val AzulJeringa = Color(0xFF1976D2)
+private val VerdeEscudo = Color(0xFF2E8B57)
+private val MoradoMente = Color(0xFF7E57C2)
+private val RosaPediatria = Color(0xFFEC407A)
+private val NegroContorno = Color(0xFF1A1A1A)
 
 @Composable
 fun DashboardDoctor() {
@@ -73,7 +83,7 @@ fun DashboardDoctor() {
                                 .background(White.copy(alpha = 0.18f))
                                 .padding(horizontal = 12.dp, vertical = 5.dp)
                         ) {
-                            Icon(Icons.Default.LocalHospital, contentDescription = null, tint = White, modifier = Modifier.size(13.dp))
+                            Icon(Icons.Default.LocalHospital, contentDescription = null, tint = RojoCorazon, modifier = Modifier.size(13.dp))
                             Spacer(modifier = Modifier.width(5.dp))
                             Text(UserSession.especialidad, color = White, fontSize = 12.sp)
                         }
@@ -84,11 +94,13 @@ fun DashboardDoctor() {
 
                 ItemMenuLateral(
                     icono = Icons.Default.Home,
+                    color = PrimaryBlue,
                     texto = "Inicio",
                     onClick = { scope.launch { drawerState.close() } }
                 )
                 ItemMenuLateral(
                     icono = Icons.Default.People,
+                    color = PurpleAccent,
                     texto = "Mis Pacientes",
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -96,7 +108,8 @@ fun DashboardDoctor() {
                     }
                 )
                 ItemMenuLateral(
-                    icono = Icons.Default.CalendarToday,
+                    icono = Icons.Default.EventAvailable,
+                    color = SecondaryCyan,
                     texto = "Citas de Hoy",
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -105,6 +118,7 @@ fun DashboardDoctor() {
                 )
                 ItemMenuLateral(
                     icono = Icons.Default.Medication,
+                    color = VerdeEscudo,
                     texto = "Recetas",
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -113,6 +127,7 @@ fun DashboardDoctor() {
                 )
                 ItemMenuLateral(
                     icono = Icons.Default.MailOutline,
+                    color = AzulJeringa,
                     texto = "Mensajes",
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -120,7 +135,8 @@ fun DashboardDoctor() {
                     }
                 )
                 ItemMenuLateral(
-                    icono = Icons.Default.Person,
+                    icono = Icons.Default.VerifiedUser,
+                    color = RojoCorazon,
                     texto = "Mi Perfil",
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -237,11 +253,28 @@ fun DashboardDoctor() {
                         )
                         TarjetaStat(
                             modifier = Modifier.weight(1f).clickable { Navigator.navigate(Screen.CitasHoy) },
-                            icono = Icons.Default.CalendarToday,
-                            colorIcono = SecondaryCyan,
+                            icono = Icons.Default.MonitorHeart,
+                            colorIcono = RojoCorazon,
                             titulo = "Citas hoy",
                             valor = citasHoyCount?.toString() ?: "—"
                         )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Franja decorativa: Áreas de la salud
+                    Text("Áreas de la salud", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        IconoArea(icono = Icons.Default.Favorite, color = RojoCorazon, etiqueta = "Cardio")
+                        IconoArea(icono = Icons.Default.Visibility, color = NegroContorno, fondo = White, borde = true, etiqueta = "Vista")
+                        IconoArea(icono = Icons.Default.Psychology, color = MoradoMente, etiqueta = "Neuro")
+                        IconoArea(icono = Icons.Default.Vaccines, color = AzulJeringa, etiqueta = "Vacunas")
+                        IconoArea(icono = Icons.Default.Bloodtype, color = RojoSangre, etiqueta = "Sangre")
+                        IconoArea(icono = Icons.Default.ChildCare, color = RosaPediatria, etiqueta = "Pediatría")
                     }
 
                     Spacer(modifier = Modifier.height(28.dp))
@@ -284,14 +317,14 @@ fun DashboardDoctor() {
                         AccesoRapido(
                             modifier = Modifier.weight(1f),
                             icono = Icons.Default.MedicalServices,
-                            colorFondo = PrimaryBlue,
+                            colorFondo = AzulJeringa,
                             texto = "Consultas",
                             onClick = { Navigator.navigate(Screen.Consultas) }
                         )
                         AccesoRapido(
                             modifier = Modifier.weight(1f),
                             icono = Icons.Default.Medication,
-                            colorFondo = Success,
+                            colorFondo = VerdeEscudo,
                             texto = "Recetas",
                             onClick = { Navigator.navigate(Screen.Recetas) }
                         )
@@ -310,7 +343,7 @@ fun DashboardDoctor() {
                         AccesoRapido(
                             modifier = Modifier.weight(1f),
                             icono = Icons.Default.LocalHospital,
-                            colorFondo = PurpleAccent,
+                            colorFondo = RojoCorazon,
                             texto = "Mi Perfil",
                             onClick = { Navigator.navigate(Screen.PerfilDoctor) }
                         )
@@ -327,8 +360,35 @@ fun DashboardDoctor() {
 }
 
 @Composable
+private fun IconoArea(
+    icono: ImageVector,
+    color: Color,
+    etiqueta: String,
+    fondo: Color = color.copy(alpha = 0.14f),
+    borde: Boolean = false
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(fondo)
+                .then(
+                    if (borde) Modifier.border(1.5.dp, NegroContorno, CircleShape) else Modifier
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icono, contentDescription = etiqueta, tint = color, modifier = Modifier.size(22.dp))
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(etiqueta, fontSize = 10.sp, color = TextSecondary)
+    }
+}
+
+@Composable
 private fun ItemMenuLateral(
     icono: ImageVector,
+    color: Color = PurpleAccent,
     texto: String,
     onClick: () -> Unit
 ) {
@@ -343,10 +403,10 @@ private fun ItemMenuLateral(
             modifier = Modifier
                 .size(38.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(PurpleAccent.copy(alpha = 0.12f)),
+                .background(color.copy(alpha = 0.12f)),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icono, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(20.dp))
+            Icon(icono, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
         }
         Spacer(modifier = Modifier.width(14.dp))
         Text(texto, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
