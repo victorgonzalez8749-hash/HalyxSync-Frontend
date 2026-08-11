@@ -1,7 +1,6 @@
 package com.halyxsynck.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -44,11 +43,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 private val RojoCorazon = Color(0xFFE53935)
-private val RojoSangre = Color(0xFF8E1B1B)
-private val AzulJeringa = Color(0xFF1976D2)
 private val VerdeEscudo = Color(0xFF2E8B57)
-private val MoradoMente = Color(0xFF7E57C2)
-private val NegroContorno = Color(0xFF1A1A1A)
 
 @OptIn(ExperimentalEncodingApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -107,45 +102,90 @@ fun DashboardPaciente() {
             .verticalScroll(rememberScrollState())
     ) {
 
-        Column(
+        // Cabecera con esquina curva + marcas de agua decorativas
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
                 .background(Brush.linearGradient(listOf(PrimaryBlue, PurpleAccent, GradientEnd)))
-                .padding(vertical = 34.dp, horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Box(
+            Icon(
+                Icons.Default.Favorite,
+                contentDescription = null,
+                tint = White.copy(alpha = 0.10f),
                 modifier = Modifier
-                    .size(92.dp)
-                    .clip(CircleShape)
-                    .background(White.copy(alpha = 0.18f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(Icons.Default.Person, contentDescription = null, tint = White, modifier = Modifier.size(48.dp))
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Text(
-                text = info?.nombreCompleto ?: UserSession.nombre,
-                color = White,
-                fontSize = 23.sp,
-                fontWeight = FontWeight.Bold
+                    .size(130.dp)
+                    .align(Alignment.TopEnd)
+                    .offset(x = 30.dp, y = (-30).dp)
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Icon(
+                Icons.Default.HealthAndSafety,
+                contentDescription = null,
+                tint = White.copy(alpha = 0.10f),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(White.copy(alpha = 0.18f))
-                    .padding(horizontal = 12.dp, vertical = 5.dp)
+                    .size(90.dp)
+                    .align(Alignment.BottomStart)
+                    .offset(x = (-20).dp, y = 20.dp)
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 34.dp, horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(Icons.Default.Badge, contentDescription = null, tint = White, modifier = Modifier.size(14.dp))
-                Spacer(modifier = Modifier.width(5.dp))
-                Text("Paciente", color = White, fontSize = 13.sp)
+
+                Box(contentAlignment = Alignment.BottomEnd) {
+                    Box(
+                        modifier = Modifier
+                            .size(92.dp)
+                            .clip(CircleShape)
+                            .background(White.copy(alpha = 0.18f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.Person, contentDescription = null, tint = White, modifier = Modifier.size(48.dp))
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clip(CircleShape)
+                            .background(White)
+                            .padding(2.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape)
+                                .background(Success)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Text(
+                    text = info?.nombreCompleto ?: UserSession.nombre,
+                    color = White,
+                    fontSize = 23.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(White.copy(alpha = 0.18f))
+                        .padding(horizontal = 12.dp, vertical = 5.dp)
+                ) {
+                    Icon(Icons.Default.Badge, contentDescription = null, tint = White, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text("Paciente", color = White, fontSize = 13.sp)
+                }
+
             }
 
         }
@@ -163,7 +203,7 @@ fun DashboardPaciente() {
                 Card(
                     modifier = Modifier.fillMaxWidth().clickable { Navigator.navigate(Screen.Mensajes) },
                     shape = RoundedCornerShape(18.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                     colors = CardDefaults.cardColors(containerColor = White)
                 ) {
                     Row(
@@ -186,23 +226,6 @@ fun DashboardPaciente() {
                         }
                         Icon(Icons.Default.ChevronRight, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(24.dp))
                     }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Franja decorativa: Cuidamos tu salud
-                Text("Cuidamos tu salud", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconoArea(icono = Icons.Default.Favorite, color = RojoCorazon, etiqueta = "Corazón")
-                    IconoArea(icono = Icons.Default.Visibility, color = NegroContorno, fondo = White, borde = true, etiqueta = "Vista")
-                    IconoArea(icono = Icons.Default.Bloodtype, color = RojoSangre, etiqueta = "Sangre")
-                    IconoArea(icono = Icons.Default.Vaccines, color = AzulJeringa, etiqueta = "Vacunas")
-                    IconoArea(icono = Icons.Default.HealthAndSafety, color = VerdeEscudo, etiqueta = "Bienestar")
-                    IconoArea(icono = Icons.Default.Psychology, color = MoradoMente, etiqueta = "Mente")
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -245,13 +268,10 @@ fun DashboardPaciente() {
                         titulo = "Mis Médicos"
                     ) {
                         info!!.medicos.forEach { medico ->
-                            Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                            FilaConBarra(color = PrimaryBlue) {
                                 Text(medico.nombre, fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 15.sp)
                                 Text(medico.especialidad, color = PrimaryBlue, fontSize = 13.sp)
                                 Text("Atiende: ${medico.padecimientos.joinToString(", ")}", color = TextSecondary, fontSize = 13.sp)
-                            }
-                            if (medico != info!!.medicos.last()) {
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                             }
                         }
                     }
@@ -264,25 +284,13 @@ fun DashboardPaciente() {
                         titulo = "Medicamentos recetados"
                     ) {
                         info!!.medicamentos.forEach { med ->
-                            Row(modifier = Modifier.padding(vertical = 8.dp), verticalAlignment = Alignment.Top) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(VerdeEscudo.copy(alpha = 0.15f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(Icons.Default.Medication, contentDescription = null, tint = VerdeEscudo, modifier = Modifier.size(18.dp))
-                                }
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Column {
-                                    Text(med.nombre, fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 15.sp)
-                                    Text(med.dosis, color = TextSecondary, fontSize = 13.sp)
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(Icons.Default.Schedule, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(14.dp))
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(med.horario, color = PurpleAccent, fontSize = 13.sp)
-                                    }
+                            FilaConBarra(color = VerdeEscudo) {
+                                Text(med.nombre, fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 15.sp)
+                                Text(med.dosis, color = TextSecondary, fontSize = 13.sp)
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Schedule, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(med.horario, color = PurpleAccent, fontSize = 13.sp)
                                 }
                             }
                         }
@@ -298,34 +306,28 @@ fun DashboardPaciente() {
                             titulo = "Próximas citas"
                         ) {
                             citasProximas.forEach { cita ->
-                                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                                FilaConBarra(color = PurpleAccent) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(Icons.Default.Event, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(18.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
                                         Text("${cita.fecha} · ${cita.hora}", fontWeight = FontWeight.SemiBold, color = TextPrimary, fontSize = 15.sp, modifier = Modifier.weight(1f))
                                         EtiquetaEstado(estado = cita.estado)
                                     }
-                                    Text("Con ${cita.medico} · ${cita.especialidad}", color = TextSecondary, fontSize = 13.sp, modifier = Modifier.padding(start = 24.dp))
-                                    Text(cita.motivo, color = TextSecondary, fontSize = 13.sp, modifier = Modifier.padding(start = 24.dp))
+                                    Text("Con ${cita.medico} · ${cita.especialidad}", color = TextSecondary, fontSize = 13.sp)
+                                    Text(cita.motivo, color = TextSecondary, fontSize = 13.sp)
 
                                     if (cita.estado == "Pendiente" || cita.estado == "Confirmada") {
-                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Spacer(modifier = Modifier.height(4.dp))
                                         Text(
                                             text = "Cancelar cita",
                                             color = Error,
                                             fontSize = 13.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             modifier = Modifier
-                                                .padding(start = 24.dp)
                                                 .clickable {
                                                     citaACancelar = cita
                                                     motivoCancelacion = ""
                                                 }
                                         )
                                     }
-                                }
-                                if (cita != citasProximas.last()) {
-                                    HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
                                 }
                             }
                         }
@@ -339,7 +341,7 @@ fun DashboardPaciente() {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                     colors = CardDefaults.cardColors(containerColor = White)
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
@@ -639,28 +641,17 @@ fun DashboardPaciente() {
 }
 
 @Composable
-private fun IconoArea(
-    icono: ImageVector,
-    color: Color,
-    etiqueta: String,
-    fondo: Color = color.copy(alpha = 0.14f),
-    borde: Boolean = false
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+private fun FilaConBarra(color: Color, contenido: @Composable ColumnScope.() -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         Box(
             modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(fondo)
-                .then(
-                    if (borde) Modifier.border(1.5.dp, NegroContorno, CircleShape) else Modifier
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(icono, contentDescription = etiqueta, tint = color, modifier = Modifier.size(22.dp))
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(etiqueta, fontSize = 10.sp, color = TextSecondary)
+                .width(3.dp)
+                .padding(vertical = 2.dp)
+                .background(color, RoundedCornerShape(2.dp))
+                .fillMaxHeight()
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Column(modifier = Modifier.weight(1f), content = contenido)
     }
 }
 
@@ -692,7 +683,7 @@ private fun MiniDato(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -722,7 +713,7 @@ private fun TarjetaInfo(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
