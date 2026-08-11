@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,6 +34,8 @@ import kotlinx.coroutines.launch
 private val RojoCorazon = Color(0xFFE53935)
 private val AzulJeringa = Color(0xFF1976D2)
 private val VerdeEscudo = Color(0xFF2E8B57)
+private val MoradoMente = Color(0xFF7E57C2)
+private val RosaPediatria = Color(0xFFEC407A)
 
 @Composable
 fun DashboardDoctor() {
@@ -215,7 +218,7 @@ fun DashboardDoctor() {
                     .padding(padding)
             ) {
 
-                // Cabecera con esquina inferior curva + marcas de agua decorativas
+                // Cabecera con esquina curva + marcas de agua grandes
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -223,31 +226,25 @@ fun DashboardDoctor() {
                         .background(Brush.linearGradient(listOf(PrimaryBlue, PurpleAccent, GradientEnd)))
                 ) {
 
-                    // Marca de agua 1: corazón grande, esquina superior derecha (se recorta con la forma)
                     Icon(
                         Icons.Default.Favorite,
                         contentDescription = null,
                         tint = White.copy(alpha = 0.10f),
-                        modifier = Modifier
-                            .size(130.dp)
-                            .align(Alignment.TopEnd)
-                            .offset(x = 30.dp, y = (-30).dp)
+                        modifier = Modifier.size(130.dp).align(Alignment.TopEnd).offset(x = 30.dp, y = (-30).dp)
                     )
-
-                    // Marca de agua 2: cruz de hospital, esquina inferior izquierda
                     Icon(
                         Icons.Default.LocalHospital,
                         contentDescription = null,
                         tint = White.copy(alpha = 0.10f),
-                        modifier = Modifier
-                            .size(90.dp)
-                            .align(Alignment.BottomStart)
-                            .offset(x = (-20).dp, y = 20.dp)
+                        modifier = Modifier.size(90.dp).align(Alignment.BottomStart).offset(x = (-20).dp, y = 20.dp)
                     )
+                    // Marcas de agua chiquitas extra, tipo confeti sutil
+                    Icon(Icons.Default.Vaccines, contentDescription = null, tint = White.copy(alpha = 0.14f), modifier = Modifier.size(26.dp).align(Alignment.TopStart).offset(x = 140.dp, y = 14.dp))
+                    Icon(Icons.Default.Bloodtype, contentDescription = null, tint = White.copy(alpha = 0.14f), modifier = Modifier.size(22.dp).align(Alignment.TopEnd).offset(x = (-70).dp, y = 60.dp))
+                    Icon(Icons.Default.MonitorHeart, contentDescription = null, tint = White.copy(alpha = 0.14f), modifier = Modifier.size(24.dp).align(Alignment.BottomEnd).offset(x = (-16).dp, y = (-10).dp))
 
                     Row(
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp, vertical = 26.dp),
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 26.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
@@ -301,16 +298,33 @@ fun DashboardDoctor() {
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    // Franja decorativa: iconos chiquitos como textura, tipo apps premium
+                    FranjaDecorativa(
+                        listOf(
+                            Icons.Default.Favorite to RojoCorazon,
+                            Icons.Default.Vaccines to AzulJeringa,
+                            Icons.Default.HealthAndSafety to VerdeEscudo,
+                            Icons.Default.Psychology to MoradoMente,
+                            Icons.Default.Bloodtype to Color(0xFF8E1B1B),
+                            Icons.Default.ChildCare to RosaPediatria
+                        )
+                    )
 
                     Text("Accesos rápidos", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
 
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Card(
-                        modifier = Modifier.fillMaxWidth().clickable { Navigator.navigate(Screen.MisPacientes) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shadow(
+                                elevation = 10.dp,
+                                shape = RoundedCornerShape(18.dp),
+                                ambientColor = PurpleAccent.copy(alpha = 0.35f),
+                                spotColor = PurpleAccent.copy(alpha = 0.35f)
+                            )
+                            .clickable { Navigator.navigate(Screen.MisPacientes) },
                         shape = RoundedCornerShape(18.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                         colors = CardDefaults.cardColors(containerColor = White)
                     ) {
                         Box {
@@ -319,10 +333,7 @@ fun DashboardDoctor() {
                                 Icons.Default.HealthAndSafety,
                                 contentDescription = null,
                                 tint = PurpleAccent.copy(alpha = 0.08f),
-                                modifier = Modifier
-                                    .size(100.dp)
-                                    .align(Alignment.CenterEnd)
-                                    .offset(x = 20.dp)
+                                modifier = Modifier.size(100.dp).align(Alignment.CenterEnd).offset(x = 20.dp)
                             )
 
                             Row(
@@ -355,6 +366,7 @@ fun DashboardDoctor() {
                             modifier = Modifier.weight(1f),
                             icono = Icons.Default.MedicalServices,
                             colorFondo = AzulJeringa,
+                            watermark = Icons.Default.Event,
                             texto = "Consultas",
                             onClick = { Navigator.navigate(Screen.Consultas) }
                         )
@@ -362,6 +374,7 @@ fun DashboardDoctor() {
                             modifier = Modifier.weight(1f),
                             icono = Icons.Default.Medication,
                             colorFondo = VerdeEscudo,
+                            watermark = Icons.Default.Healing,
                             texto = "Recetas",
                             onClick = { Navigator.navigate(Screen.Recetas) }
                         )
@@ -374,6 +387,7 @@ fun DashboardDoctor() {
                             modifier = Modifier.weight(1f),
                             icono = Icons.Default.MailOutline,
                             colorFondo = SecondaryCyan,
+                            watermark = Icons.Default.Notifications,
                             texto = "Mensajes",
                             onClick = { Navigator.navigate(Screen.Mensajes) }
                         )
@@ -381,10 +395,24 @@ fun DashboardDoctor() {
                             modifier = Modifier.weight(1f),
                             icono = Icons.Default.LocalHospital,
                             colorFondo = RojoCorazon,
+                            watermark = Icons.Default.VerifiedUser,
                             texto = "Mi Perfil",
                             onClick = { Navigator.navigate(Screen.PerfilDoctor) }
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    FranjaDecorativa(
+                        listOf(
+                            Icons.Default.MedicalServices to PrimaryBlue,
+                            Icons.Default.LocalHospital to RojoCorazon,
+                            Icons.Default.Medication to VerdeEscudo,
+                            Icons.Default.MailOutline to SecondaryCyan,
+                            Icons.Default.Bloodtype to Color(0xFF8E1B1B),
+                            Icons.Default.Favorite to RojoCorazon
+                        )
+                    )
 
                 }
 
@@ -394,6 +422,18 @@ fun DashboardDoctor() {
 
     }
 
+}
+
+@Composable
+private fun FranjaDecorativa(iconos: List<Pair<ImageVector, Color>>) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        iconos.forEach { (icono, color) ->
+            Icon(icono, contentDescription = null, tint = color.copy(alpha = 0.20f), modifier = Modifier.size(18.dp))
+        }
+    }
 }
 
 @Composable
@@ -434,9 +474,13 @@ private fun TarjetaStat(
     valor: String
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.shadow(
+            elevation = 6.dp,
+            shape = RoundedCornerShape(16.dp),
+            ambientColor = colorIcono.copy(alpha = 0.25f),
+            spotColor = colorIcono.copy(alpha = 0.25f)
+        ),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
         Box {
@@ -444,11 +488,8 @@ private fun TarjetaStat(
             Icon(
                 watermark,
                 contentDescription = null,
-                tint = colorIcono.copy(alpha = 0.07f),
-                modifier = Modifier
-                    .size(70.dp)
-                    .align(Alignment.BottomEnd)
-                    .offset(x = 12.dp, y = 12.dp)
+                tint = colorIcono.copy(alpha = 0.08f),
+                modifier = Modifier.size(70.dp).align(Alignment.BottomEnd).offset(x = 12.dp, y = 12.dp)
             )
 
             Column(modifier = Modifier.padding(16.dp)) {
@@ -474,30 +515,47 @@ private fun AccesoRapido(
     modifier: Modifier = Modifier,
     icono: ImageVector,
     colorFondo: Color,
+    watermark: ImageVector,
     texto: String,
     onClick: () -> Unit
 ) {
     Card(
-        modifier = modifier.clickable { onClick() },
+        modifier = modifier
+            .shadow(
+                elevation = 6.dp,
+                shape = RoundedCornerShape(16.dp),
+                ambientColor = colorFondo.copy(alpha = 0.3f),
+                spotColor = colorFondo.copy(alpha = 0.3f)
+            )
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(58.dp)
-                    .clip(CircleShape)
-                    .background(colorFondo),
-                contentAlignment = Alignment.Center
+        Box {
+
+            Icon(
+                watermark,
+                contentDescription = null,
+                tint = colorFondo.copy(alpha = 0.10f),
+                modifier = Modifier.size(46.dp).align(Alignment.TopEnd).offset(x = 8.dp, y = (-8).dp)
+            )
+
+            Column(
+                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(icono, contentDescription = null, tint = White, modifier = Modifier.size(30.dp))
+                Box(
+                    modifier = Modifier
+                        .size(58.dp)
+                        .clip(CircleShape)
+                        .background(colorFondo),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(icono, contentDescription = null, tint = White, modifier = Modifier.size(30.dp))
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(texto, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary, textAlign = TextAlign.Center)
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(texto, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary, textAlign = TextAlign.Center)
         }
     }
 }
