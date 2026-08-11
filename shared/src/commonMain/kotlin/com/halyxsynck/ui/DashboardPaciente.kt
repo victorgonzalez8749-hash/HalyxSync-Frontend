@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -44,6 +45,9 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 private val RojoCorazon = Color(0xFFE53935)
 private val VerdeEscudo = Color(0xFF2E8B57)
+private val AzulJeringa = Color(0xFF1976D2)
+private val MoradoMente = Color(0xFF7E57C2)
+private val RojoSangre = Color(0xFF8E1B1B)
 
 @OptIn(ExperimentalEncodingApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -102,7 +106,7 @@ fun DashboardPaciente() {
             .verticalScroll(rememberScrollState())
     ) {
 
-        // Cabecera con esquina curva + marcas de agua decorativas
+        // Cabecera con esquina curva + marcas de agua grandes y chicas
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -114,21 +118,17 @@ fun DashboardPaciente() {
                 Icons.Default.Favorite,
                 contentDescription = null,
                 tint = White.copy(alpha = 0.10f),
-                modifier = Modifier
-                    .size(130.dp)
-                    .align(Alignment.TopEnd)
-                    .offset(x = 30.dp, y = (-30).dp)
+                modifier = Modifier.size(130.dp).align(Alignment.TopEnd).offset(x = 30.dp, y = (-30).dp)
             )
-
             Icon(
                 Icons.Default.HealthAndSafety,
                 contentDescription = null,
                 tint = White.copy(alpha = 0.10f),
-                modifier = Modifier
-                    .size(90.dp)
-                    .align(Alignment.BottomStart)
-                    .offset(x = (-20).dp, y = 20.dp)
+                modifier = Modifier.size(90.dp).align(Alignment.BottomStart).offset(x = (-20).dp, y = 20.dp)
             )
+            Icon(Icons.Default.Medication, contentDescription = null, tint = White.copy(alpha = 0.14f), modifier = Modifier.size(24.dp).align(Alignment.TopStart).offset(x = 130.dp, y = 18.dp))
+            Icon(Icons.Default.MonitorHeart, contentDescription = null, tint = White.copy(alpha = 0.14f), modifier = Modifier.size(26.dp).align(Alignment.TopEnd).offset(x = (-60).dp, y = 70.dp))
+            Icon(Icons.Default.Biotech, contentDescription = null, tint = White.copy(alpha = 0.14f), modifier = Modifier.size(22.dp).align(Alignment.BottomEnd).offset(x = (-18).dp, y = (-14).dp))
 
             Column(
                 modifier = Modifier
@@ -201,34 +201,58 @@ fun DashboardPaciente() {
             } else {
 
                 Card(
-                    modifier = Modifier.fillMaxWidth().clickable { Navigator.navigate(Screen.Mensajes) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(18.dp),
+                            ambientColor = PurpleAccent.copy(alpha = 0.3f),
+                            spotColor = PurpleAccent.copy(alpha = 0.3f)
+                        )
+                        .clickable { Navigator.navigate(Screen.Mensajes) },
                     shape = RoundedCornerShape(18.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                     colors = CardDefaults.cardColors(containerColor = White)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(52.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(Brush.linearGradient(listOf(GradientStart, GradientEnd))),
-                            contentAlignment = Alignment.Center
+                    Box {
+                        Icon(
+                            Icons.Default.ChatBubble,
+                            contentDescription = null,
+                            tint = PurpleAccent.copy(alpha = 0.08f),
+                            modifier = Modifier.size(80.dp).align(Alignment.CenterEnd).offset(x = 16.dp)
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.MailOutline, contentDescription = null, tint = White, modifier = Modifier.size(26.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(52.dp)
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(Brush.linearGradient(listOf(GradientStart, GradientEnd))),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.MailOutline, contentDescription = null, tint = White, modifier = Modifier.size(26.dp))
+                            }
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("Mensajes", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                                Text("Comunícate con tu médico", fontSize = 12.sp, color = TextSecondary)
+                            }
+                            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(24.dp))
                         }
-                        Spacer(modifier = Modifier.width(14.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Mensajes", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-                            Text("Comunícate con tu médico", fontSize = 12.sp, color = TextSecondary)
-                        }
-                        Icon(Icons.Default.ChevronRight, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(24.dp))
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                FranjaDecorativa(
+                    listOf(
+                        Icons.Default.Favorite to RojoCorazon,
+                        Icons.Default.Vaccines to AzulJeringa,
+                        Icons.Default.HealthAndSafety to VerdeEscudo,
+                        Icons.Default.Psychology to MoradoMente,
+                        Icons.Default.Bloodtype to RojoSangre,
+                        Icons.Default.Biotech to SecondaryCyan
+                    )
+                )
 
                 if (info == null) {
 
@@ -248,6 +272,7 @@ fun DashboardPaciente() {
                             modifier = Modifier.weight(1f),
                             icono = Icons.Default.Cake,
                             color = SecondaryCyan,
+                            watermark = Icons.Default.Celebration,
                             titulo = "Edad",
                             valor = "${info!!.edad} años"
                         )
@@ -255,6 +280,7 @@ fun DashboardPaciente() {
                             modifier = Modifier.weight(1f),
                             icono = Icons.Default.Wc,
                             color = PurpleAccent,
+                            watermark = Icons.Default.Person,
                             titulo = "Sexo",
                             valor = info!!.sexo
                         )
@@ -265,6 +291,7 @@ fun DashboardPaciente() {
                     TarjetaInfo(
                         icono = Icons.Default.MedicalServices,
                         colorIcono = PrimaryBlue,
+                        watermark = Icons.Default.LocalHospital,
                         titulo = "Mis Médicos"
                     ) {
                         info!!.medicos.forEach { medico ->
@@ -281,6 +308,7 @@ fun DashboardPaciente() {
                     TarjetaInfo(
                         icono = Icons.Default.Medication,
                         colorIcono = VerdeEscudo,
+                        watermark = Icons.Default.Healing,
                         titulo = "Medicamentos recetados"
                     ) {
                         info!!.medicamentos.forEach { med ->
@@ -303,6 +331,7 @@ fun DashboardPaciente() {
                         TarjetaInfo(
                             icono = Icons.Default.CalendarToday,
                             colorIcono = PurpleAccent,
+                            watermark = Icons.Default.EventAvailable,
                             titulo = "Próximas citas"
                         ) {
                             citasProximas.forEach { cita ->
@@ -321,11 +350,10 @@ fun DashboardPaciente() {
                                             color = Error,
                                             fontSize = 13.sp,
                                             fontWeight = FontWeight.SemiBold,
-                                            modifier = Modifier
-                                                .clickable {
-                                                    citaACancelar = cita
-                                                    motivoCancelacion = ""
-                                                }
+                                            modifier = Modifier.clickable {
+                                                citaACancelar = cita
+                                                motivoCancelacion = ""
+                                            }
                                         )
                                     }
                                 }
@@ -339,215 +367,244 @@ fun DashboardPaciente() {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(18.dp),
+                            ambientColor = SecondaryCyan.copy(alpha = 0.3f),
+                            spotColor = SecondaryCyan.copy(alpha = 0.3f)
+                        ),
                     shape = RoundedCornerShape(18.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                     colors = CardDefaults.cardColors(containerColor = White)
                 ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
+                    Box {
 
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(RoundedCornerShape(11.dp))
-                                    .background(SecondaryCyan.copy(alpha = 0.15f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Default.Biotech, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(20.dp))
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("Mis Estudios", color = SecondaryCyan, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        }
+                        Icon(
+                            Icons.Default.Biotech,
+                            contentDescription = null,
+                            tint = SecondaryCyan.copy(alpha = 0.08f),
+                            modifier = Modifier.size(90.dp).align(Alignment.TopEnd).offset(x = 20.dp, y = (-20).dp)
+                        )
 
-                        Spacer(modifier = Modifier.height(14.dp))
+                        Column(modifier = Modifier.padding(20.dp)) {
 
-                        if (estudios.isEmpty() && fotosPendientes.isEmpty()) {
-                            Text("Todavía no has subido ningún estudio.", color = TextSecondary, fontSize = 14.sp)
-                        } else {
-                            estudios.forEach { estudio ->
-                                Column(modifier = Modifier.padding(vertical = 6.dp)) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(Icons.Default.Description, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(18.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Text(estudio.descripcion.ifBlank { "Estudio" }, color = TextPrimary, fontSize = 14.sp)
-                                            if (estudio.doctorNombre.isNotBlank()) {
-                                                Text("Enviado a Dr. ${estudio.doctorNombre}", color = TextSecondary, fontSize = 12.sp)
-                                            }
-                                        }
-                                        if (estudio.fecha.isNotBlank()) {
-                                            Text("· ${estudio.fecha}", color = TextSecondary, fontSize = 13.sp)
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    AsyncImage(
-                                        model = estudio.url,
-                                        contentDescription = "Estudio médico",
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(190.dp)
-                                            .clip(RoundedCornerShape(14.dp))
-                                            .clickable { imagenSeleccionada = estudio.url },
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-                        HorizontalDivider()
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text("Subir nuevo estudio", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        if (info != null && info!!.medicos.isNotEmpty()) {
-
-                            ExposedDropdownMenuBox(
-                                expanded = expandidoDoctor,
-                                onExpandedChange = { expandidoDoctor = it }
-                            ) {
-                                OutlinedTextField(
-                                    value = doctorSeleccionado,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    label = { Text("¿A qué doctor se lo mandas?") },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandidoDoctor) },
-                                    modifier = Modifier.fillMaxWidth().menuAnchor(),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = PrimaryBlue,
-                                        unfocusedBorderColor = TextSecondary
-                                    )
-                                )
-                                ExposedDropdownMenu(
-                                    expanded = expandidoDoctor,
-                                    onDismissRequest = { expandidoDoctor = false }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(38.dp)
+                                        .clip(RoundedCornerShape(11.dp))
+                                        .background(SecondaryCyan.copy(alpha = 0.15f)),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    info!!.medicos.forEach { medico ->
-                                        DropdownMenuItem(
-                                            text = { Text("${medico.nombre} · ${medico.especialidad}") },
-                                            onClick = {
-                                                doctorSeleccionado = medico.nombre
-                                                expandidoDoctor = false
+                                    Icon(Icons.Default.Biotech, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(20.dp))
+                                }
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text("Mis Estudios", color = SecondaryCyan, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            }
+
+                            Spacer(modifier = Modifier.height(14.dp))
+
+                            if (estudios.isEmpty() && fotosPendientes.isEmpty()) {
+                                Text("Todavía no has subido ningún estudio.", color = TextSecondary, fontSize = 14.sp)
+                            } else {
+                                estudios.forEach { estudio ->
+                                    Column(modifier = Modifier.padding(vertical = 6.dp)) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(Icons.Default.Description, contentDescription = null, tint = SecondaryCyan, modifier = Modifier.size(18.dp))
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Column(modifier = Modifier.weight(1f)) {
+                                                Text(estudio.descripcion.ifBlank { "Estudio" }, color = TextPrimary, fontSize = 14.sp)
+                                                if (estudio.doctorNombre.isNotBlank()) {
+                                                    Text("Enviado a Dr. ${estudio.doctorNombre}", color = TextSecondary, fontSize = 12.sp)
+                                                }
                                             }
+                                            if (estudio.fecha.isNotBlank()) {
+                                                Text("· ${estudio.fecha}", color = TextSecondary, fontSize = 13.sp)
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        AsyncImage(
+                                            model = estudio.url,
+                                            contentDescription = "Estudio médico",
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(190.dp)
+                                                .clip(RoundedCornerShape(14.dp))
+                                                .clickable { imagenSeleccionada = estudio.url },
+                                            contentScale = ContentScale.Crop
                                         )
                                     }
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(14.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
+                            HorizontalDivider()
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                        }
+                            Text("Subir nuevo estudio", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
 
-                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Spacer(modifier = Modifier.height(10.dp))
 
-                            repeat(3) { index ->
+                            if (info != null && info!!.medicos.isNotEmpty()) {
 
-                                Box(
-                                    modifier = Modifier
-                                        .size(78.dp)
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(
-                                            if (index < fotosPendientes.size) Success.copy(alpha = 0.15f)
-                                            else Background
-                                        ),
-                                    contentAlignment = Alignment.Center
+                                ExposedDropdownMenuBox(
+                                    expanded = expandidoDoctor,
+                                    onExpandedChange = { expandidoDoctor = it }
                                 ) {
-                                    if (index < fotosPendientes.size) {
-                                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Success, modifier = Modifier.size(32.dp))
-                                    } else if (index == fotosPendientes.size) {
-
-                                        IconButton(onClick = { tomarFoto() }) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(52.dp)
-                                                    .clip(CircleShape)
-                                                    .background(if (doctorSeleccionado.isNotBlank()) PurpleAccent else TextSecondary.copy(alpha = 0.4f)),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Icon(Icons.Default.CameraAlt, contentDescription = "Tomar foto", tint = White, modifier = Modifier.size(26.dp))
-                                            }
+                                    OutlinedTextField(
+                                        value = doctorSeleccionado,
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text("¿A qué doctor se lo mandas?") },
+                                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandidoDoctor) },
+                                        modifier = Modifier.fillMaxWidth().menuAnchor(),
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedBorderColor = PrimaryBlue,
+                                            unfocusedBorderColor = TextSecondary
+                                        )
+                                    )
+                                    ExposedDropdownMenu(
+                                        expanded = expandidoDoctor,
+                                        onDismissRequest = { expandidoDoctor = false }
+                                    ) {
+                                        info!!.medicos.forEach { medico ->
+                                            DropdownMenuItem(
+                                                text = { Text("${medico.nombre} · ${medico.especialidad}") },
+                                                onClick = {
+                                                    doctorSeleccionado = medico.nombre
+                                                    expandidoDoctor = false
+                                                }
+                                            )
                                         }
-
-                                    } else {
-                                        Icon(Icons.Default.PhotoCamera, contentDescription = null, tint = TextSecondary.copy(alpha = 0.3f), modifier = Modifier.size(26.dp))
                                     }
+                                }
+
+                                Spacer(modifier = Modifier.height(14.dp))
+
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+
+                                repeat(3) { index ->
+
+                                    Box(
+                                        modifier = Modifier
+                                            .size(78.dp)
+                                            .clip(RoundedCornerShape(16.dp))
+                                            .background(
+                                                if (index < fotosPendientes.size) Success.copy(alpha = 0.15f)
+                                                else Background
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (index < fotosPendientes.size) {
+                                            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Success, modifier = Modifier.size(32.dp))
+                                        } else if (index == fotosPendientes.size) {
+
+                                            IconButton(onClick = { tomarFoto() }) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(52.dp)
+                                                        .clip(CircleShape)
+                                                        .background(if (doctorSeleccionado.isNotBlank()) PurpleAccent else TextSecondary.copy(alpha = 0.4f)),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Icon(Icons.Default.CameraAlt, contentDescription = "Tomar foto", tint = White, modifier = Modifier.size(26.dp))
+                                                }
+                                            }
+
+                                        } else {
+                                            Icon(Icons.Default.PhotoCamera, contentDescription = null, tint = TextSecondary.copy(alpha = 0.3f), modifier = Modifier.size(26.dp))
+                                        }
+                                    }
+
                                 }
 
                             }
 
-                        }
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                            Text("${fotosPendientes.size} / 3 fotos nuevas", color = TextSecondary, fontSize = 13.sp)
 
-                        Text("${fotosPendientes.size} / 3 fotos nuevas", color = TextSecondary, fontSize = 13.sp)
+                            if (doctorSeleccionado.isBlank() && fotosPendientes.isEmpty()) {
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text("Selecciona un doctor antes de tomar la foto", color = TextSecondary, fontSize = 12.sp)
+                            }
 
-                        if (doctorSeleccionado.isBlank() && fotosPendientes.isEmpty()) {
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text("Selecciona un doctor antes de tomar la foto", color = TextSecondary, fontSize = 12.sp)
-                        }
+                            if (fotosPendientes.isNotEmpty()) {
 
-                        if (fotosPendientes.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(14.dp))
 
-                            Spacer(modifier = Modifier.height(14.dp))
+                                PrimaryButton(
+                                    text = if (subiendo) "Subiendo..." else "Subir estudio",
+                                    onClick = {
 
-                            PrimaryButton(
-                                text = if (subiendo) "Subiendo..." else "Subir estudio",
-                                onClick = {
+                                        if (subiendo || doctorSeleccionado.isBlank()) return@PrimaryButton
 
-                                    if (subiendo || doctorSeleccionado.isBlank()) return@PrimaryButton
+                                        scope.launch {
 
-                                    scope.launch {
+                                            subiendo = true
 
-                                        subiendo = true
+                                            val fechaEstudio = ""
 
-                                        val fechaEstudio = ""
+                                            var exitoTotal = true
 
-                                        var exitoTotal = true
-
-                                        fotosPendientes.forEach { bytes ->
-                                            val base64 = Base64.encode(bytes)
-                                            val ok = estudioRepository.subirEstudio(
-                                                SubirEstudioRequest(
-                                                    correoPaciente = UserSession.correo,
-                                                    correoDoctor = info!!.medicos.first { it.nombre == doctorSeleccionado }.correo,
-                                                    imagenBase64 = base64,
-                                                    descripcion = "Estudio médico",
-                                                    fecha = fechaEstudio
+                                            fotosPendientes.forEach { bytes ->
+                                                val base64 = Base64.encode(bytes)
+                                                val ok = estudioRepository.subirEstudio(
+                                                    SubirEstudioRequest(
+                                                        correoPaciente = UserSession.correo,
+                                                        correoDoctor = info!!.medicos.first { it.nombre == doctorSeleccionado }.correo,
+                                                        imagenBase64 = base64,
+                                                        descripcion = "Estudio médico",
+                                                        fecha = fechaEstudio
+                                                    )
                                                 )
-                                            )
-                                            if (!ok) exitoTotal = false
+                                                if (!ok) exitoTotal = false
+                                            }
+
+                                            mensajeEstudio = if (exitoTotal) "Estudio subido correctamente" else "Hubo un error al subir alguna foto"
+
+                                            if (exitoTotal) {
+                                                fotosPendientes = listOf()
+                                                estudios = estudioRepository.obtenerEstudios(UserSession.correo)
+                                            }
+
+                                            subiendo = false
+
                                         }
-
-                                        mensajeEstudio = if (exitoTotal) "Estudio subido correctamente" else "Hubo un error al subir alguna foto"
-
-                                        if (exitoTotal) {
-                                            fotosPendientes = listOf()
-                                            estudios = estudioRepository.obtenerEstudios(UserSession.correo)
-                                        }
-
-                                        subiendo = false
 
                                     }
+                                )
 
-                                }
-                            )
+                            }
+
+                            if (mensajeEstudio.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Text(mensajeEstudio, color = if (mensajeEstudio.contains("correctamente")) Success else Error, fontSize = 14.sp)
+                            }
 
                         }
-
-                        if (mensajeEstudio.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Text(mensajeEstudio, color = if (mensajeEstudio.contains("correctamente")) Success else Error, fontSize = 14.sp)
-                        }
-
                     }
                 }
 
+                Spacer(modifier = Modifier.height(20.dp))
+
+                FranjaDecorativa(
+                    listOf(
+                        Icons.Default.MedicalServices to PrimaryBlue,
+                        Icons.Default.LocalHospital to RojoCorazon,
+                        Icons.Default.Medication to VerdeEscudo,
+                        Icons.Default.MailOutline to SecondaryCyan,
+                        Icons.Default.Bloodtype to RojoSangre,
+                        Icons.Default.Favorite to RojoCorazon
+                    )
+                )
+
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             PrimaryButton(
                 text = "Cerrar sesión",
@@ -641,6 +698,18 @@ fun DashboardPaciente() {
 }
 
 @Composable
+private fun FranjaDecorativa(iconos: List<Pair<ImageVector, Color>>) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        iconos.forEach { (icono, color) ->
+            Icon(icono, contentDescription = null, tint = color.copy(alpha = 0.20f), modifier = Modifier.size(18.dp))
+        }
+    }
+}
+
+@Composable
 private fun FilaConBarra(color: Color, contenido: @Composable ColumnScope.() -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         Box(
@@ -677,28 +746,41 @@ private fun MiniDato(
     modifier: Modifier = Modifier,
     icono: ImageVector,
     color: Color,
+    watermark: ImageVector,
     titulo: String,
     valor: String
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.shadow(
+            elevation = 6.dp,
+            shape = RoundedCornerShape(16.dp),
+            ambientColor = color.copy(alpha = 0.25f),
+            spotColor = color.copy(alpha = 0.25f)
+        ),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(color.copy(alpha = 0.15f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(icono, contentDescription = null, tint = color, modifier = Modifier.size(22.dp))
+        Box {
+            Icon(
+                watermark,
+                contentDescription = null,
+                tint = color.copy(alpha = 0.08f),
+                modifier = Modifier.size(56.dp).align(Alignment.BottomEnd).offset(x = 10.dp, y = 10.dp)
+            )
+            Column(modifier = Modifier.padding(16.dp)) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(color.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(icono, contentDescription = null, tint = color, modifier = Modifier.size(22.dp))
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(titulo, fontSize = 12.sp, color = TextSecondary)
+                Text(valor, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(titulo, fontSize = 12.sp, color = TextSecondary)
-            Text(valor, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
         }
     }
 }
@@ -707,35 +789,50 @@ private fun MiniDato(
 private fun TarjetaInfo(
     icono: ImageVector,
     colorIcono: Color,
+    watermark: ImageVector,
     titulo: String,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().shadow(
+            elevation = 8.dp,
+            shape = RoundedCornerShape(18.dp),
+            ambientColor = colorIcono.copy(alpha = 0.25f),
+            spotColor = colorIcono.copy(alpha = 0.25f)
+        ),
         shape = RoundedCornerShape(18.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Box {
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(RoundedCornerShape(11.dp))
-                        .background(colorIcono.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(icono, contentDescription = null, tint = colorIcono, modifier = Modifier.size(20.dp))
+            Icon(
+                watermark,
+                contentDescription = null,
+                tint = colorIcono.copy(alpha = 0.07f),
+                modifier = Modifier.size(90.dp).align(Alignment.TopEnd).offset(x = 20.dp, y = (-20).dp)
+            )
+
+            Column(modifier = Modifier.padding(20.dp)) {
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(RoundedCornerShape(11.dp))
+                            .background(colorIcono.copy(alpha = 0.15f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(icono, contentDescription = null, tint = colorIcono, modifier = Modifier.size(20.dp))
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(titulo, color = colorIcono, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(titulo, color = colorIcono, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                contenido()
+
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            contenido()
-
         }
     }
 }
