@@ -1,5 +1,6 @@
 package com.halyxsynck.api
 
+import com.halyxsynck.model.CambiarContrasenaRequest
 import com.halyxsynck.model.LoginRequest
 import com.halyxsynck.model.LoginResponse
 import com.halyxsynck.model.RegisterRequest
@@ -85,6 +86,24 @@ class AuthApi {
                 mensaje = "Error al iniciar sesión"
             )
 
+        }
+
+    }
+
+    suspend fun cambiarContrasena(request: CambiarContrasenaRequest): Boolean {
+
+        return try {
+
+            val respuesta = client.post("$baseUrl/auth/cambiar-contrasena") {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+
+            respuesta.status.value == 200
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
 
     }

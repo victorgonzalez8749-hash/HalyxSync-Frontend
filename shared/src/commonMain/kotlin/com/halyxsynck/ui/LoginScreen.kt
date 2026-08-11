@@ -4,13 +4,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.size
 
 import com.halyxsynck.components.Logo
 import com.halyxsynck.components.WelcomeHeader
@@ -27,6 +38,7 @@ import com.halyxsynck.components.ForgotPassword
 import com.halyxsynck.components.RegisterLink
 
 import com.halyxsynck.theme.Background
+import com.halyxsynck.theme.PrimaryBlue
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 
@@ -134,7 +146,7 @@ fun LoginScreen() {
             }
             Spacer(modifier = Modifier.height(12.dp))
 
-            ForgotPassword(onClick = {})
+            ForgotPassword(onClick = { Navigator.navigate(Screen.OlvideContrasena) })
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -160,14 +172,12 @@ fun LoginScreen() {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Botón para iniciar sesión con huella o rostro
-            PrimaryButton(
-                text = "🔒 Iniciar sesión con huella o rostro",
+            Button(
                 onClick = {
 
                     if (UserSession.correoParaHuella.isBlank() || UserSession.contrasenaGuardada.isBlank()) {
                         mensajeHuella = "Primero inicia sesión una vez con tu correo y contraseña"
-                        return@PrimaryButton
+                        return@Button
                     }
 
                     if (!SesionSegura.tienePermisoBiometrico()) {
@@ -176,8 +186,17 @@ fun LoginScreen() {
                         intentarLoginConHuella()
                     }
 
-                }
-            )
+                },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+            ) {
+                Icon(Icons.Default.Fingerprint, contentDescription = "Huella", tint = Color.White, modifier = Modifier.size(22.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Icon(Icons.Default.Face, contentDescription = "Rostro", tint = Color.White, modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.width(10.dp))
+                Text("Iniciar sesión con huella o rostro", color = Color.White)
+            }
 
             if (mensajeHuella.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
