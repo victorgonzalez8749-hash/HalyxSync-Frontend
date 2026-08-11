@@ -31,6 +31,8 @@ sealed class Screen {
 
     object Recetas : Screen()
 
+    object OlvideContrasena : Screen()
+
     data class DetallePaciente(val correo: String) : Screen()
 
     data class Chat(val correoOtro: String, val nombreOtro: String) : Screen()

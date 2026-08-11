@@ -1,6 +1,7 @@
 package com.halyxsynck.repository
 
 import com.halyxsynck.api.AuthApi
+import com.halyxsynck.model.CambiarContrasenaRequest
 import com.halyxsynck.model.LoginRequest
 import com.halyxsynck.model.LoginResponse
 
@@ -31,6 +32,10 @@ class AuthRepository {
 
         return api.registrar(request)
 
+    }
+
+    suspend fun cambiarContrasena(correo: String, nuevaContrasena: String): Boolean {
+        return api.cambiarContrasena(CambiarContrasenaRequest(correo, nuevaContrasena))
     }
 
 }
