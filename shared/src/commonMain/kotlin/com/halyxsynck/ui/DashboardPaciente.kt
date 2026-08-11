@@ -1,6 +1,7 @@
 package com.halyxsynck.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +42,13 @@ import com.halyxsynck.theme.*
 import kotlinx.coroutines.launch
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+
+private val RojoCorazon = Color(0xFFE53935)
+private val RojoSangre = Color(0xFF8E1B1B)
+private val AzulJeringa = Color(0xFF1976D2)
+private val VerdeEscudo = Color(0xFF2E8B57)
+private val MoradoMente = Color(0xFF7E57C2)
+private val NegroContorno = Color(0xFF1A1A1A)
 
 @OptIn(ExperimentalEncodingApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -181,6 +190,23 @@ fun DashboardPaciente() {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Franja decorativa: Cuidamos tu salud
+                Text("Cuidamos tu salud", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    IconoArea(icono = Icons.Default.Favorite, color = RojoCorazon, etiqueta = "Corazón")
+                    IconoArea(icono = Icons.Default.Visibility, color = NegroContorno, fondo = White, borde = true, etiqueta = "Vista")
+                    IconoArea(icono = Icons.Default.Bloodtype, color = RojoSangre, etiqueta = "Sangre")
+                    IconoArea(icono = Icons.Default.Vaccines, color = AzulJeringa, etiqueta = "Vacunas")
+                    IconoArea(icono = Icons.Default.HealthAndSafety, color = VerdeEscudo, etiqueta = "Bienestar")
+                    IconoArea(icono = Icons.Default.Psychology, color = MoradoMente, etiqueta = "Mente")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 if (info == null) {
 
                     Column(
@@ -234,7 +260,7 @@ fun DashboardPaciente() {
 
                     TarjetaInfo(
                         icono = Icons.Default.Medication,
-                        colorIcono = Success,
+                        colorIcono = VerdeEscudo,
                         titulo = "Medicamentos recetados"
                     ) {
                         info!!.medicamentos.forEach { med ->
@@ -243,10 +269,10 @@ fun DashboardPaciente() {
                                     modifier = Modifier
                                         .size(36.dp)
                                         .clip(RoundedCornerShape(10.dp))
-                                        .background(Success.copy(alpha = 0.15f)),
+                                        .background(VerdeEscudo.copy(alpha = 0.15f)),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Icon(Icons.Default.Medication, contentDescription = null, tint = Success, modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Medication, contentDescription = null, tint = VerdeEscudo, modifier = Modifier.size(18.dp))
                                 }
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Column {
@@ -613,6 +639,32 @@ fun DashboardPaciente() {
 }
 
 @Composable
+private fun IconoArea(
+    icono: ImageVector,
+    color: Color,
+    etiqueta: String,
+    fondo: Color = color.copy(alpha = 0.14f),
+    borde: Boolean = false
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(fondo)
+                .then(
+                    if (borde) Modifier.border(1.5.dp, NegroContorno, CircleShape) else Modifier
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icono, contentDescription = etiqueta, tint = color, modifier = Modifier.size(22.dp))
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(etiqueta, fontSize = 10.sp, color = TextSecondary)
+    }
+}
+
+@Composable
 private fun EtiquetaEstado(estado: String) {
     val color = when (estado) {
         "Cancelada" -> Error
@@ -633,7 +685,7 @@ private fun EtiquetaEstado(estado: String) {
 private fun MiniDato(
     modifier: Modifier = Modifier,
     icono: ImageVector,
-    color: androidx.compose.ui.graphics.Color,
+    color: Color,
     titulo: String,
     valor: String
 ) {
@@ -663,7 +715,7 @@ private fun MiniDato(
 @Composable
 private fun TarjetaInfo(
     icono: ImageVector,
-    colorIcono: androidx.compose.ui.graphics.Color,
+    colorIcono: Color,
     titulo: String,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
