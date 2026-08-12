@@ -1,6 +1,7 @@
 package com.halyxsynck.api
 
 import com.halyxsynck.model.PacienteResumen
+import com.halyxsynck.model.RecetaInfo
 import com.halyxsynck.model.RegistrarHistorialRequest
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -72,6 +73,23 @@ class DoctorApi {
         return try {
 
             client.get("$baseUrl/doctor/citas-hoy?correo=$correoDoctor&fecha=$fechaHoy").body()
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            emptyList()
+
+        }
+
+    }
+
+    // NUEVO
+    suspend fun obtenerRecetas(correoDoctor: String): List<RecetaInfo> {
+
+        return try {
+
+            client.get("$baseUrl/doctor/recetas?correo=$correoDoctor").body()
 
         } catch (e: Exception) {
 
