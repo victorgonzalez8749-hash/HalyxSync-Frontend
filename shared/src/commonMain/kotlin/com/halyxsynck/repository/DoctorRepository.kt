@@ -4,6 +4,7 @@ import com.halyxsynck.api.CitaAgendaInfo
 import com.halyxsynck.api.DoctorApi
 import com.halyxsynck.api.EstadisticasDoctor
 import com.halyxsynck.model.PacienteResumen
+import com.halyxsynck.model.RecetaInfo
 import com.halyxsynck.model.RegistrarHistorialRequest
 
 class DoctorRepository {
@@ -22,9 +23,13 @@ class DoctorRepository {
         return api.obtenerEstadisticas(correoDoctor, fechaHoy)
     }
 
-    // NUEVO
     suspend fun obtenerCitasHoy(correoDoctor: String, fechaHoy: String): List<CitaAgendaInfo> {
         return api.obtenerCitasHoy(correoDoctor, fechaHoy)
+    }
+
+    // NUEVO
+    suspend fun obtenerRecetas(correoDoctor: String): List<RecetaInfo> {
+        return api.obtenerRecetas(correoDoctor)
     }
 
 }
