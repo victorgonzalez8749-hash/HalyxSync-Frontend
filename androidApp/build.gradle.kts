@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.googleServices)
 }
 
 kotlin {
@@ -21,6 +22,10 @@ dependencies {
 
     // NUEVO: para reconocimiento de huella digital
     implementation("androidx.biometric:biometric:1.1.0")
+
+    // NUEVO: Firebase para notificaciones push
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
 }
 
 android {

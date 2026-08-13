@@ -3,12 +3,18 @@ package com.halyxsynck.viewmodel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.halyxsynck.TokenManager
+import com.halyxsynck.api.NotificacionApi
 import com.halyxsynck.repository.AuthRepository
 import com.halyxsynck.session.UserSession
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class LoginViewModel {
 
     private val repository = AuthRepository()
+    private val notificacionApi = NotificacionApi()
 
     var correo by mutableStateOf("")
         private set
@@ -50,7 +56,14 @@ class LoginViewModel {
 
             UserSession.contrasenaGuardada = contrasena
 
-            UserSession.correoParaHuella = correo // NUEVO: no se borra al cerrar sesión
+            UserSession.correoParaHuella = correo
+
+            val token = TokenManager.tokenPendiente
+            if (!token.isNullOrBlank()) {
+                CoroutineScope(Dispatchers.Default).launch {
+                    notificacionApi.registrarToken(correo, token)
+                }
+            }
 
         }
 
