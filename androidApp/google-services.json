@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "230310720696",
+    "project_id": "halyxsync",
+    "storage_bucket": "halyxsync.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230310720696:android:d45f017764a94b530c704d",
+        "android_client_info": {
+          "package_name": "com.halyxsynck"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiqvrM-Z2ecOtgPQdxqVV80haJKsBn9xI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
