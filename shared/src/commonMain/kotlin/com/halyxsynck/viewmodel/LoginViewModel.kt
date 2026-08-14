@@ -7,9 +7,6 @@ import com.halyxsynck.TokenManager
 import com.halyxsynck.api.NotificacionApi
 import com.halyxsynck.repository.AuthRepository
 import com.halyxsynck.session.UserSession
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class LoginViewModel {
 
@@ -58,11 +55,10 @@ class LoginViewModel {
 
             UserSession.correoParaHuella = correo
 
-            val token = TokenManager.tokenPendiente
+            // NUEVO: espera activamente el token antes de mandarlo
+            val token = TokenManager.obtenerToken()
             if (!token.isNullOrBlank()) {
-                CoroutineScope(Dispatchers.Default).launch {
-                    notificacionApi.registrarToken(correo, token)
-                }
+                notificacionApi.registrarToken(correo, token)
             }
 
         }
