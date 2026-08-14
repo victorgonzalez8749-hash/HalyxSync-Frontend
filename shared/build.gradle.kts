@@ -58,6 +58,9 @@ kotlin {
 
             // NUEVO: para capturar fotos con la camara
             implementation("androidx.activity:activity-compose:1.9.3")
+
+            // NUEVO: Firebase para notificaciones push (usado por TokenManager.android.kt)
+            implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
